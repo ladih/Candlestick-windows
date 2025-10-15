@@ -1,1 +1,3 @@
-Ongoing project analysing candlestick windows
+Ongoing project
+
+
