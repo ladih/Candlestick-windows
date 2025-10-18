@@ -1,1 +1,1 @@
-Analysing stock data using pandas, numpy, sklearn, matbplotlib in Python
+Analysing stock data using pandas, numpy, sklearn, and matplotlib in Python
