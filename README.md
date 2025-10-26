@@ -1,3 +1,3 @@
-Analysing stock data using pandas, numpy, sklearn, and pytorch in Python with goal of predicting returns (ongoing)
+Ongoing project analyzing stock market data with Pandas, NumPy, scikit-learn, and PyTorch to develop a return prediction model
 
 Data source: Polygon.io
