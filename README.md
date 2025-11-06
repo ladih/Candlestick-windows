@@ -1,3 +1,2 @@
-Project analyzing stock market data using pandas, NumPy, scikit-learn, XGBoost, and PyTorch to develop a return prediction model.
-
+Using machine learning models to select trades based on historical candlestick data.
 Data source: [massive.com](https://massive.com/)
