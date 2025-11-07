@@ -2,7 +2,7 @@
 
 ## Goal
 
-The goal of this project is to develop, compare, and evaluate machine learning models that identify trading opportunities based on historical candlestick data and signal candles. Models are trained and tested over specific periods, and their performance is measured by metrics such as hit rate, mean return, and Sharpe ratio, compared against a baseline strategy.
+The goal of this project is to build, compare, and evaluate machine learning models that identify trading opportunities based on historical candlestick data and signal candles. Models are trained and tested over specific periods, and their performance is measured by metrics such as hit rate, mean return, and Sharpe ratio for the selected trades.
 
 ## Example run
 
@@ -26,9 +26,9 @@ RandomForest          0.6        460       277       0.60      0.0076      0.10 
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
 
-**baseline**: No filtering beyond the signal candle\
+**baseline**: Uses only a filter to ensure at most one trade is active at any given time\
 **threshold**: The threshold the predicted probability (if binary target) or predicted return (continuous return target) has to exceed in order for a trade to be accepted\
-**n_trades**: The number of trades selected by the (model, threshold) pair after applying a filter to ensure only one trade is active at any given time.\
+**n_trades**: The number of trades selected by the (model, threshold) pair after applying a filter to ensure at most one trade is active at any given time\
 **n_correct**: The number of selected trades with positive return\
 **hit_rate**: Fraction of correct trades: n_correct / n_trades\
 **mean_return**: Mean return of the selected trades\
@@ -2616,12 +2616,12 @@ for epoch in range(n_epochs):
 print("Training done MLP")
 ```
 
-    Epoch 0/5 | Loss: 0.6942 | Train.acc: 0.5319 | Val.acc: 0.5181
-    Epoch 1/5 | Loss: 0.6874 | Train.acc: 0.5572 | Val.acc: 0.5511
-    Epoch 2/5 | Loss: 0.6847 | Train.acc: 0.5662 | Val.acc: 0.5546
-    Epoch 3/5 | Loss: 0.6836 | Train.acc: 0.5688 | Val.acc: 0.5516
-    Epoch 4/5 | Loss: 0.6817 | Train.acc: 0.5713 | Val.acc: 0.5558
-    Epoch 5/5 | Loss: 0.6828 | Train.acc: 0.5699 | Val.acc: 0.5558
+    Epoch 0/5 | Loss: 0.6919 | Train.acc: 0.5317 | Val.acc: 0.5179
+    Epoch 1/5 | Loss: 0.6864 | Train.acc: 0.5567 | Val.acc: 0.5494
+    Epoch 2/5 | Loss: 0.6824 | Train.acc: 0.5664 | Val.acc: 0.5564
+    Epoch 3/5 | Loss: 0.6838 | Train.acc: 0.5672 | Val.acc: 0.5575
+    Epoch 4/5 | Loss: 0.6813 | Train.acc: 0.5713 | Val.acc: 0.5565
+    Epoch 5/5 | Loss: 0.6829 | Train.acc: 0.5723 | Val.acc: 0.5575
     Training done MLP
     
 
@@ -2900,12 +2900,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel")
 ```
 
-    Epoch 0/5 | Loss: 0.6930 | Train.acc: 0.4953 | Val.acc: 0.5033
-    Epoch 1/5 | Loss: 0.6845 | Train.acc: 0.5602 | Val.acc: 0.5549
-    Epoch 2/5 | Loss: 0.6818 | Train.acc: 0.5714 | Val.acc: 0.5572
-    Epoch 3/5 | Loss: 0.6817 | Train.acc: 0.5693 | Val.acc: 0.5583
-    Epoch 4/5 | Loss: 0.6810 | Train.acc: 0.5721 | Val.acc: 0.5568
-    Epoch 5/5 | Loss: 0.6802 | Train.acc: 0.5733 | Val.acc: 0.5585
+    Epoch 0/5 | Loss: 0.6951 | Train.acc: 0.4796 | Val.acc: 0.4945
+    Epoch 1/5 | Loss: 0.6848 | Train.acc: 0.5605 | Val.acc: 0.5542
+    Epoch 2/5 | Loss: 0.6829 | Train.acc: 0.5677 | Val.acc: 0.5574
+    Epoch 3/5 | Loss: 0.6819 | Train.acc: 0.5699 | Val.acc: 0.5606
+    Epoch 4/5 | Loss: 0.6803 | Train.acc: 0.5707 | Val.acc: 0.5588
+    Epoch 5/5 | Loss: 0.6802 | Train.acc: 0.5719 | Val.acc: 0.5594
     Training done FusionModel
     
 
@@ -2978,8 +2978,8 @@ print(f"\nMajority-class-acc: {majority_class_accuracy:.3f}")
     RandomForest      1.000       0.544     0.551
     ExtraTrees        1.000       0.548     0.561
     XGBoost           0.763       0.557     0.558
-    MLP               0.573       0.556     0.571
-    FusionModel       0.575       0.559     0.569
+    MLP               0.573       0.558     0.568
+    FusionModel       0.570       0.559     0.572
     
     Majority-class-acc: 0.518
     
@@ -3189,31 +3189,31 @@ print_trade_metrics(trade_metrics_each_model_binary, reg=False)
     RandomForest          460       277       0.60       0.0076        0.104     
     ExtraTrees            450       273       0.61       0.0074        0.102     
     XGBoost               506       285       0.56       0.0016        0.022     
-    MLP                   215       135       0.63       0.0051        0.058     
-    FusionModel           434       276       0.64       0.0069        0.090     
+    MLP                   169       108       0.64       0.0064        0.072     
+    FusionModel           295       186       0.63       0.0061        0.078     
     
     Threshold: 0.65
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          260       165       0.63       0.0037        0.043     
     ExtraTrees            243       148       0.61       0.0048        0.054     
     XGBoost               283       164       0.58       0.0017        0.021     
-    MLP                   33        21        0.64       -0.0155       -0.111    
-    FusionModel           180       119       0.66       0.0126        0.135     
+    MLP                   32        21        0.66       0.0106        0.119     
+    FusionModel           112       78        0.70       0.0111        0.108     
     
     Threshold: 0.7
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          110       69        0.63       0.0048        0.049     
     ExtraTrees            115       65        0.57       0.0035        0.034     
     XGBoost               126       75        0.60       0.0024        0.026     
-    MLP                   15        9         0.60       -0.0583       -0.312    
-    FusionModel           53        37        0.70       0.0060        0.046     
+    MLP                   11        8         0.73       -0.0041       -0.055    
+    FusionModel           25        17        0.68       -0.0167       -0.103    
     
     Threshold: 0.8
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          15        11        0.73       0.0243        0.483     
     ExtraTrees            16        10        0.62       -0.0006       -0.006    
     XGBoost               13        7         0.54       0.0239        0.455     
-    MLP                   9         4         0.44       -0.0278       -0.371    
+    MLP                   6         3         0.50       -0.0339       -0.386    
     FusionModel           4         2         0.50       -0.0219       -0.287    
     
     Threshold: 0
@@ -3443,12 +3443,12 @@ for epoch in range(n_epochs):
 print("Training done MLP_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0176 | loss_val: 0.8494
-    Epoch 1/5 | loss_train: 1.0035 | loss_val: 0.8503
-    Epoch 2/5 | loss_train: 0.9991 | loss_val: 0.8416
-    Epoch 3/5 | loss_train: 0.9971 | loss_val: 0.8404
-    Epoch 4/5 | loss_train: 0.9952 | loss_val: 0.8452
-    Epoch 5/5 | loss_train: 0.9939 | loss_val: 0.8446
+    Epoch 0/5 | loss_train: 1.0231 | loss_val: 0.8759
+    Epoch 1/5 | loss_train: 1.0149 | loss_val: 0.8764
+    Epoch 2/5 | loss_train: 1.0128 | loss_val: 1.0471
+    Epoch 3/5 | loss_train: 1.0066 | loss_val: 0.8446
+    Epoch 4/5 | loss_train: 0.9974 | loss_val: 0.8577
+    Epoch 5/5 | loss_train: 0.9978 | loss_val: 0.8430
     Training done MLP_reg
     
 
@@ -3524,12 +3524,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0215 | loss_val: 0.8575
-    Epoch 1/5 | loss_train: 1.0010 | loss_val: 0.8466
-    Epoch 2/5 | loss_train: 0.9979 | loss_val: 0.8491
-    Epoch 3/5 | loss_train: 0.9957 | loss_val: 0.8411
-    Epoch 4/5 | loss_train: 0.9940 | loss_val: 0.8616
-    Epoch 5/5 | loss_train: 0.9970 | loss_val: 0.8531
+    Epoch 0/5 | loss_train: 1.0112 | loss_val: 0.8516
+    Epoch 1/5 | loss_train: 1.0012 | loss_val: 0.8501
+    Epoch 2/5 | loss_train: 0.9992 | loss_val: 0.8500
+    Epoch 3/5 | loss_train: 0.9949 | loss_val: 0.8472
+    Epoch 4/5 | loss_train: 0.9891 | loss_val: 0.8613
+    Epoch 5/5 | loss_train: 0.9796 | loss_val: 0.8540
     Training done FusionModel_reg
     
 
@@ -3583,16 +3583,16 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     RandomForest_reg      328       151       0.46       -0.0019       -0.016    
     ExtraTrees_reg        364       178       0.49       -0.0068       -0.065    
     XGBoost_reg           397       201       0.51       0.0013        0.011     
-    MLP_reg               12        5         0.42       -0.0908       -0.407    
-    FusionModel_reg       37        17        0.46       0.0004        0.003     
+    MLP_reg               1         0         0.00       -0.1638       nan       
+    FusionModel_reg       37        18        0.49       -0.0214       -0.173    
     
     Threshold: 0.06
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest_reg      48        22        0.46       -0.0073       -0.046    
     ExtraTrees_reg        50        25        0.50       0.0031        0.018     
     XGBoost_reg           74        37        0.50       -0.0069       -0.046    
-    MLP_reg               2         0         0.00       -0.0334       -1.165    
-    FusionModel_reg       6         2         0.33       -0.1320       -1.038    
+    MLP_reg               0         0         --         --            --        
+    FusionModel_reg       6         2         0.33       -0.0840       -0.958    
     
     Threshold: 0.08
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3600,7 +3600,7 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     ExtraTrees_reg        24        10        0.42       -0.0254       -0.166    
     XGBoost_reg           42        17        0.40       -0.0087       -0.048    
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       3         1         0.33       -0.2074       -1.353    
+    FusionModel_reg       3         2         0.67       -0.0265       -0.299    
     
     Threshold: 0.1
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3608,7 +3608,7 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     ExtraTrees_reg        14        7         0.50       0.0139        0.082     
     XGBoost_reg           20        6         0.30       -0.0279       -0.113    
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       1         0         0.00       -0.2882       nan       
+    FusionModel_reg       2         2         1.00       0.0349        1.592     
     
     Threshold: -inf
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3788,12 +3788,12 @@ for m in all_trade_metrics:
     ---------------------------------------------------------
     
     Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
-    RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
-    XGBoost               0.8        13        7         0.54      0.0239      0.45    0.117    0.450     0.048      
-    ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.220    0.550     0.372      
-    FusionModel           0.65       180       119       0.66      0.0126      0.14    0.013    0.000     0.028      
-    RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015    0.000     0.009      
-    baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760       
+    RandomForest          0.8        15        11        0.73      0.0243      0.48    0.101    0.044     0.028      
+    XGBoost               0.8        13        7         0.54      0.0239      0.45    0.116    0.448     0.049      
+    ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.223    0.553     0.375      
+    FusionModel           0.65       112       78        0.70      0.0111      0.11    0.058    0.000     0.116      
+    MLP                   0.65       32        21        0.66      0.0106      0.12    0.202    0.037     0.243      
+    baseline              --         1229      574       0.47      -0.0018     -0.02   0.769    0.863     0.760       
     
 
 
@@ -3862,7 +3862,7 @@ print(f"\nGlobal p-value (independent draws): {p_value_global}")
     Total number of (model, threshold) pairs from which the top performing
     (model, threshold) pair, i.e., (RandomForest, 0.8), has been selected: 40
     
-    Global p-value (independent draws): 0.92488
+    Global p-value (independent draws): 0.92476
     
 
 
@@ -3943,7 +3943,7 @@ print(f"\nGlobal p-value (nested structure): {p_global:.3f}")
     45000 / 50000 draws complete
     50000 / 50000 draws complete
     
-    Global p-value (nested structure): 0.874
+    Global p-value (nested structure): 0.871
     
 
 ## Appendix
