@@ -26,7 +26,7 @@ RandomForest          0.6        460       277       0.60      0.0076      0.10 
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
 
-**baseline**: Uses only a filter to ensure at most one trade is active at any given time\
+**baseline**: A strategy whose only restriction is that at most one trade is active at any given time\
 **threshold**: The threshold the predicted probability (if binary target) or predicted return (continuous return target) has to exceed in order for a trade to be accepted\
 **n_trades**: The number of trades selected by the (model, threshold) pair after applying a filter to ensure at most one trade is active at any given time\
 **n_correct**: The number of selected trades with positive return\
