@@ -55,6 +55,7 @@ are classifiers predicting probabilities of the binary target (positive vs. nega
 
 The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the `n_trades` of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
 
+
 ## Data
 
 The dataset consists of 26-minute candlestick windows sampled from 1-minute historical data. Each window contains a signal candle at minute 21, defined as a candle whose absolute percentage change satisfies
