@@ -27,17 +27,17 @@ XGBoost_reg
 MLP_reg
 FusionModel_reg
 
-Summary of the top 5 performing model-selected trading sets with at least 10 trades, ranked by mean return:
+Summary of top 5 model-selected trading sets with at least 10 trades, ranked by mean return:
 
-Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
-RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
-XGBoost               0.8        13        7         0.54      0.0239      0.45    0.117    0.450     0.048      
-ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.220    0.550     0.372      
-FusionModel           0.65       180       119       0.66      0.0126      0.14    0.013    0.000     0.028      
-RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015    0.000     0.009      
-baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
+Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_hitrate  p_mean  p_sharpe  
+RandomForest          0.8        15        11        0.73      0.0243      0.48     0.046     0.102   0.029      
+XGBoost               0.8        13        7         0.54      0.0239      0.45     0.450     0.118   0.049      
+ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08     0.551     0.222   0.372      
+MLP                   0.6        293       185       0.63      0.0078      0.12     0.000     0.037   0.014      
+MLP                   0.65       52        35        0.67      0.0077      0.10     0.005     0.224   0.231      
+baseline              --         1229      574       0.47      -0.0018     -0.02    0.863     0.770   0.760       
 
-Global p-value for top 1 mean return (0.0243): 0.87
+Global p-value for top 1 mean return (0.024): 0.87
 ```
 
 ### Metric definitions
