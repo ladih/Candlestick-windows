@@ -19,10 +19,12 @@ Models used:
 RandomForest
 ExtraTrees
 XGBoost
+MLP
 FusionModel
 RandomForest_reg
 ExtraTrees_reg
 XGBoost_reg
+MLP_reg
 FusionModel_reg
 
 Summary of top 5 performing model-selected trading sets with at least 10 trades, ranked by mean return:
