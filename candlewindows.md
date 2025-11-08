@@ -6,8 +6,6 @@ The goal of this project is to build, compare, and evaluate machine learning mod
 
 ## Example run
 
-Below is a summary of the top 5 model-selected trading sets with at least 10 trades, ranked by mean return, for the given training and test sets.
-
 ```
 Training set period: 2024-12-30 to 2025-03-20
 Test set period: 2025-03-21 to 2025-04-17
@@ -16,6 +14,9 @@ Number of trades in training period: 16297
 Number of trades in test period: 6866
 
 ---------------------------------------------------------
+
+Summary of the top 5 model-selected trading sets, each consisting of at least 10 trades.
+The ranking is based on mean return.
 
 Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
 RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
@@ -26,20 +27,71 @@ RandomForest          0.6        460       277       0.60      0.0076      0.10 
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
 
-**baseline**: A strategy whose only restriction is that at most one trade is active at any given time\
-**threshold**: The threshold the predicted probability (if binary target) or predicted return (continuous return target) has to exceed in order for a trade to be accepted\
-**n_trades**: The number of trades selected by the (model, threshold) pair after applying a filter to ensure at most one trade is active at any given time\
-**n_correct**: The number of selected trades with positive return\
-**hit_rate**: Fraction of correct trades: n_correct / n_trades\
-**mean_return**: Mean return of the selected trades\
-**sharpe**: The Sharpe ratio calculated over the returns of the selected trades\
-**p_mean**: P-value for testing whether the observed mean return is significantly different from the mean return of randomly selected trades from the test set\
-**p_hitrate**: P-value for testing whether the observed hit rate is significantly different from the hit rate of randomly selected trades from the test set\
-**p_sharpe**: P-value for testing whether the observed Sharpe ratio is significantly different from the Sharpe ratio of randomly selected trades from the test set
+## Metric definitions
 
-Model names ending with '_reg' are models that uses continuous return as target, while those without _reg uses binary target (positive or negative return).
+- **baseline** – strategy with at most one active trade at any time  
+- **threshold** – minimum predicted probability/return to open a trade  
+- **n_trades** – number of trades meeting the threshold  
+- **n_correct** – number of profitable trades  
+- **hit_rate** – `n_correct / n_trades`  
+- **mean_return** – average return per trade  
+- **sharpe** – Sharpe ratio of selected trade returns  
+- **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests 
 
-**Note:** The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown above). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the n_trades of the (model, threshold) pairs. The p-value we get from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+## Models
+
+Models tested include:
+
+- **Random Forest (Classifier & Regressor)**
+- **ExtraTrees (Classifier & Regressor)**
+- **XGBoost (Classifier & Regressor)**
+- **MLP (Classifier & Regressor)**
+- **FusionModel (Classifier & Regressor)**
+- **Baseline (no filter beyond signal candle)**
+
+
+
+Models ending with `_reg` predict **continuous returns**, while those without `_reg`
+use a **binary target** (positive vs. negative return).
+
+## Statistical significance of the example run
+
+The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the n_trades of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+----------------------------------------------------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+----------------------------------------------------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+----------------------------------------------------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+----------------------------------------------------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+
+# Code part
 
 ## Content structure
 1. Data preparation  
@@ -50,7 +102,7 @@ Model names ending with '_reg' are models that uses continuous return as target,
 
 ## Data
 
-The data consists of candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window, where the 21st candlestick is a "signal candle" that is either up more than 4% or down more than -4%. The return for each window is from the open of the candle after the signal candle to the close of the fifth candle after the signal candle.
+The data consists of candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window, where the 21st candlestick is a "signal candle" that is either up more than 4% or down more than -4%. The return for each window is from the opening price of the candle after the signal candle to the closing price of the fifth candle after the signal candle.
 
 The windows were collected for stocks that had satisfied certain daily thresholds for volume, price, and (high-low)/low. For more details on how the windows were collected, see the appendix.
 
@@ -71,17 +123,14 @@ for i, window_name in enumerate(windows_csv_names, start=1):
     ticker = window_name.split('_')[0]
     w_df['ticker'] = ticker
     windows.append(w_df)
-    if i % 5000 == 0:
+    if i % 800 == 0:
+        break
         print(f"{i} / {len(windows_csv_names)} windows loaded")
 
 print(f"Number of windows: {len(windows)}")
 ```
 
-    5000 / 23163 windows loaded
-    10000 / 23163 windows loaded
-    15000 / 23163 windows loaded
-    20000 / 23163 windows loaded
-    Number of windows: 23163
+    Number of windows: 800
     
 
 ### Clean and check data
@@ -466,7 +515,7 @@ total_with_na = np.sum(has_na)
 print(f"{total_with_na} out of {len(windows)} windows have missing values.")
 ```
 
-    0 out of 23163 windows have missing values.
+    0 out of 800 windows have missing values.
     
 
 
@@ -506,7 +555,7 @@ print(f"{len(bad_signal_idx)} windows have bad signal candle.")
 ```
 
     Min: 0.040
-    Max: 0.619
+    Max: 0.237
     0 windows have bad signal candle.
     
 
@@ -523,7 +572,7 @@ for i, w_df in enumerate(windows):
 print(f"{len(inconsistent_idx)} windows have inconsistent dtypes.")
 ```
 
-    12332 windows have inconsistent dtypes.
+    434 windows have inconsistent dtypes.
     
 
 
@@ -624,10 +673,10 @@ print(f"Using {len(windows_eda)} out of {len(windows)} windows for eda/training 
 print(f"Using {len(windows_test)} out of {len(windows)} windows for testing ({100 - eda_frac*100:.0f}%)")
 ```
 
-    n_eda before adjusting for day transition: 16214
-    n_eda after adjusting for day transition: 16297
-    Using 16297 out of 23163 windows for eda/training (70%)
-    Using 6866 out of 23163 windows for testing (30%)
+    n_eda before adjusting for day transition: 560
+    n_eda after adjusting for day transition: 561
+    Using 561 out of 800 windows for eda/training (70%)
+    Using 239 out of 800 windows for testing (30%)
     
 
 
@@ -644,8 +693,8 @@ print("End date for test set:", end_date_test )
 ```
 
     Start date for EDA set: 2024-12-30
-    End date for EDA set: 2025-03-20
-    Start date for test set: 2025-03-21
+    End date for EDA set: 2025-03-13
+    Start date for test set: 2025-03-17
     End date for test set: 2025-04-17
     
 
@@ -675,7 +724,7 @@ plt.show()
 
 
     
-![png](output_25_0.png)
+![png](output_29_0.png)
     
 
 
@@ -697,7 +746,7 @@ plt.show()
 
 
     
-![png](output_27_0.png)
+![png](output_31_0.png)
     
 
 
@@ -712,7 +761,7 @@ print(f"Mean: {mean_price_signals:.2f}, Median: {median:.2f}, Min: {Min:.2f}, Ma
 ```
 
     Summary of closing price for signal candles:
-    Mean: 10.84, Median: 3.71, Min: 0.07, Max: 528.00
+    Mean: 12.67, Median: 3.33, Min: 0.75, Max: 221.81
     
 
 
@@ -734,7 +783,7 @@ plt.show()
 
 
     
-![png](output_29_0.png)
+![png](output_33_0.png)
     
 
 
@@ -748,8 +797,8 @@ print(f"Positive candles: min: {np.min(signal_candle_perc[signal_candle_perc > 0
 ```
 
     Signal candle (c-o)/o summary:
-    Negative candles: min: -0.619, max: -0.040
-    Positive candles: min: 0.040, max: 0.565
+    Negative candles: min: -0.237, max: -0.040
+    Positive candles: min: 0.040, max: 0.185
     
 
 
@@ -771,7 +820,7 @@ plt.show()
 
 
     
-![png](output_32_0.png)
+![png](output_36_0.png)
     
 
 
@@ -786,7 +835,7 @@ baseline = np.mean(returns_eda)
 print(f"Mean baseline return (using only initial stock selection filter): {baseline:.10f}")
 ```
 
-    Mean baseline return (using only initial stock selection filter): 0.0000808393
+    Mean baseline return (using only initial stock selection filter): -0.0033528246
     
 
 
@@ -803,7 +852,7 @@ plt.show()
 
 
     
-![png](output_34_0.png)
+![png](output_38_0.png)
     
 
 
@@ -865,7 +914,7 @@ print(f"Added time features (using windows[0].iloc[0]) as example):"
 ```
 
     Added time features (using windows[0].iloc[0]) as example):
-    minute: 11
+    minute: 16
     hour: 9
     dayofweek: 0
     dayofmonth: 30
@@ -904,7 +953,7 @@ print(flattened_windows_raw.shape)
 print(f"Features per window: {flattened_windows_raw.shape[1]}")
 ```
 
-    (23163, 194)
+    (800, 194)
     Features per window: 194
     
 
@@ -953,7 +1002,7 @@ df_flattened_windows_eda.shape
 
 
 
-    (16297, 195)
+    (561, 195)
 
 
 
@@ -992,25 +1041,25 @@ for i in range(top_n_corr):
          Top 20 Pearson:                                    Top 20 Spearman:
                                              Pearson                                            Spearman
     1    Column 0 (rtn)                      1.0000         Column 0 (rtn)                      1.0000
-    2    Column 133 (n_candle_7)             -0.0192        Column 145 (n_candle_19)            -0.0604
-    3    Column 145 (n_candle_19)            -0.0180        Column 146 (n_candle_20)            -0.0597
-    4    Column 131 (n_candle_5)             -0.0180        Column 144 (n_candle_18)            -0.0581
-    5    Column 186 (hour_candle_18)         0.0169         Column 143 (n_candle_17)            -0.0535
-    6    Column 184 (hour_candle_16)         0.0167         Column 19 (v_candle_19)             -0.0521
-    7    Column 187 (hour_candle_19)         0.0167         Column 18 (v_candle_18)             -0.0515
-    8    Column 185 (hour_candle_17)         0.0167         Column 20 (v_candle_20)             -0.0510
-    9    Column 181 (hour_candle_13)         0.0167         Column 147 (n_candle_21)            -0.0509
-    10   Column 183 (hour_candle_15)         0.0164         Column 142 (n_candle_16)            -0.0506
-    11   Column 180 (hour_candle_12)         0.0164         Column 141 (n_candle_15)            -0.0506
-    12   Column 182 (hour_candle_14)         0.0164         Column 139 (n_candle_13)            -0.0490
-    13   Column 188 (hour_candle_20)         0.0163         Column 138 (n_candle_12)            -0.0488
-    14   Column 179 (hour_candle_11)         0.0163         Column 17 (v_candle_17)             -0.0481
-    15   Column 174 (hour_candle_6)          0.0161         Column 136 (n_candle_10)            -0.0471
-    16   Column 175 (hour_candle_7)          0.0159         Column 12 (v_candle_12)             -0.0461
-    17   Column 172 (hour_candle_4)          0.0159         Column 133 (n_candle_7)             -0.0460
-    18   Column 173 (hour_candle_5)          0.0158         Column 134 (n_candle_8)             -0.0450
-    19   Column 178 (hour_candle_10)         0.0157         Column 135 (n_candle_9)             -0.0446
-    20   Column 189 (hour_candle_21)         0.0156         Column 137 (n_candle_11)            -0.0442
+    2    Column 154 (minute_candle_7)        0.1294         Column 20 (v_candle_20)             -0.1483
+    3    Column 156 (minute_candle_9)        0.1161         Column 146 (n_candle_20)            -0.1247
+    4    Column 12 (v_candle_12)             -0.1150        Column 12 (v_candle_12)             -0.1206
+    5    Column 19 (v_candle_19)             -0.1134        Column 21 (v_candle_21)             -0.1128
+    6    Column 155 (minute_candle_8)        0.1120         Column 15 (v_candle_15)             -0.1113
+    7    Column 157 (minute_candle_10)       0.0977         Column 7 (v_candle_7)               -0.1112
+    8    Column 13 (v_candle_13)             -0.0953        Column 19 (v_candle_19)             -0.1104
+    9    Column 10 (v_candle_10)             -0.0934        Column 148 (minute_candle_1)        0.1095
+    10   Column 15 (v_candle_15)             -0.0912        Column 153 (minute_candle_6)        0.1072
+    11   Column 138 (n_candle_12)            -0.0910        Column 183 (hour_candle_15)         0.1063
+    12   Column 20 (v_candle_20)             -0.0899        Column 184 (hour_candle_16)         0.1040
+    13   Column 153 (minute_candle_6)        0.0891         Column 145 (n_candle_19)            -0.1035
+    14   Column 21 (v_candle_21)             -0.0844        Column 154 (minute_candle_7)        0.1030
+    15   Column 158 (minute_candle_11)       0.0836         Column 185 (hour_candle_17)         0.1028
+    16   Column 11 (v_candle_11)             -0.0814        Column 180 (hour_candle_12)         0.1022
+    17   Column 14 (v_candle_14)             -0.0736        Column 182 (hour_candle_14)         0.1021
+    18   Column 18 (v_candle_18)             -0.0707        Column 171 (hour_candle_3)          0.1013
+    19   Column 148 (minute_candle_1)        0.0670         Column 186 (hour_candle_18)         0.1013
+    20   Column 139 (n_candle_13)            -0.0608        Column 172 (hour_candle_4)          0.1011
     
 
 n, hour, v possibly interesting
@@ -1032,7 +1081,7 @@ plt.show()
 
 
     
-![png](output_47_0.png)
+![png](output_51_0.png)
     
 
 
@@ -1094,26 +1143,26 @@ for i in range(n_top):
     
               Depth 1                   Depth 2                   Depth 10
     
-    1    l_candle_13     0.016     c_candle_13     0.018     vw_candle_13    0.109
-    2    c_candle_13     0.015     l_candle_13     0.018     l_candle_1      0.086
-    3    vw_candle_13    0.015     o_candle_13     0.016     vw_candle_14    0.081
-    4    o_candle_13     0.015     c_candle_12     0.016     l_candle_2      0.080
-    5    c_candle_12     0.014     vw_candle_13    0.016     o_candle_14     0.079
-    6    l_candle_14     0.014     c_candle_14     0.016     c_candle_14     0.078
-    7    o_candle_14     0.014     l_candle_18     0.016     o_candle_15     0.075
-    8    vw_candle_14    0.014     o_candle_14     0.016     vw_candle_12    0.075
-    9    c_candle_14     0.013     l_candle_14     0.016     l_candle_13     0.073
-    10   l_candle_18     0.013     vw_candle_14    0.016     o_candle_12     0.072
-    11   h_candle_14     0.013     l_candle_12     0.015     v_candle_19     0.070
-    12   l_candle_12     0.013     h_candle_14     0.015     l_candle_14     0.070
-    13   o_candle_15     0.012     vw_candle_12    0.014     c_candle_12     0.070
-    14   c_candle_15     0.012     o_candle_10     0.014     c_candle_21     0.069
-    15   h_candle_15     0.012     l_candle_15     0.014     vw_candle_15    0.069
-    16   vw_candle_12    0.012     h_candle_15     0.014     vw_candle_17    0.068
-    17   vw_candle_15    0.012     vw_candle_15    0.014     c_candle_11     0.068
-    18   o_candle_16     0.011     vw_candle_11    0.013     l_candle_5      0.067
-    19   l_candle_15     0.011     o_candle_15     0.013     o_candle_13     0.066
-    20   l_candle_17     0.011     vw_candle_18    0.013     vw_candle_18    0.065
+    1    l_candle_8      0.020     o_candle_9      0.189     vw_candle_16    0.832
+    2    minute_candle_7 0.020     h_candle_6      0.186     vw_candle_10    0.831
+    3    l_candle_7      0.019     l_candle_13     0.183     vw_candle_18    0.809
+    4    v_candle_20     0.019     o_candle_10     0.171     c_candle_19     0.808
+    5    dayofweek       0.018     vw_candle_7     0.140     vw_candle_21    0.793
+    6    o_candle_9      0.018     l_candle_11     0.136     vw_candle_19    0.779
+    7    v_candle_12     0.017     l_candle_14     0.135     vw_candle_12    0.777
+    8    v_candle_19     0.017     o_candle_18     0.134     c_candle_12     0.773
+    9    l_candle_9      0.017     l_candle_9      0.132     vw_candle_2     0.765
+    10   o_candle_8      0.017     vw_candle_14    0.127     c_candle_8      0.758
+    11   v_candle_14     0.016     vw_candle_8     0.127     vw_candle_17    0.750
+    12   vw_candle_8     0.016     vw_candle_9     0.126     vw_candle_1     0.749
+    13   minute_candle_9 0.016     l_candle_8      0.124     vw_candle_15    0.749
+    14   minute_candle_8 0.016     c_candle_9      0.120     h_candle_17     0.745
+    15   minute_candle_4 0.015     o_candle_16     0.118     c_candle_16     0.744
+    16   v_candle_13     0.015     l_candle_15     0.112     v_candle_20     0.740
+    17   v_candle_21     0.015     v_candle_1      0.106     h_candle_19     0.739
+    18   n_candle_14     0.014     l_candle_16     0.103     c_candle_21     0.739
+    19   minute_candle_3 0.014     l_candle_7      0.100     vw_candle_4     0.734
+    20   n_candle_19     0.014     l_candle_12     0.093     c_candle_15     0.725
     
 
 vw, o, h c, l possibly interesting
@@ -1265,16 +1314,16 @@ register_feature('E_crtn_o_slope_4', n_crtn_o_slope_4, crtn_o_slope_4, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1305,16 +1354,16 @@ register_feature('E_crtn_c_slope_4', n_crtn_c_slope_4, crtn_c_slope_4, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1345,16 +1394,16 @@ register_feature('E_crtn_h_slope_4', n_crtn_h_slope_4, crtn_h_slope_4, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1385,16 +1434,16 @@ register_feature('E_crtn_l_slope_4', n_crtn_l_slope_4, crtn_l_slope_4, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1411,7 +1460,7 @@ register_feature('E_c2c_rtn', n_c2c_rtn, c2c_rtn, temporal=True)
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     
 
 
@@ -1431,7 +1480,7 @@ register_feature('E_vw_dist', n_vw_dist, vw_dist, temporal=True)
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     
 
 
@@ -1457,7 +1506,7 @@ register_feature('E_signal_high_low', n_signal_high_low, signal_high_low)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1474,7 +1523,7 @@ register_feature('E_vol_norm', n_vol_norm, vol_norm, temporal=True)
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     
 
 
@@ -1490,7 +1539,7 @@ register_feature('E_norm_vol_slope_1', n_norm_vol_slope_1, norm_vol_slope_1)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1506,7 +1555,7 @@ register_feature('E_norm_vol_slope_2', n_norm_vol_slope_2, norm_vol_slope_2, tem
 
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     
 
 
@@ -1522,7 +1571,7 @@ register_feature('E_norm_vol_slope_4', n_norm_vol_slope_4, norm_vol_slope_4, tem
 
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1539,7 +1588,7 @@ register_feature('E_n_norm', n_n_norm, n_norm, temporal=True)
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     
 
 
@@ -1555,7 +1604,7 @@ register_feature('E_norm_n_slope_1', n_norm_n_slope_1, norm_n_slope_1)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1571,7 +1620,7 @@ register_feature('E_norm_n_slope_2', n_norm_n_slope_2, norm_n_slope_2, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 2)
+    Shape: (800, 2)
     
 
 
@@ -1587,7 +1636,7 @@ register_feature('E_norm_n_slope_4', n_norm_n_slope_4, norm_n_slope_4, temporal=
 
     infs: 0
     nans: 0
-    Shape: (23163, 4)
+    Shape: (800, 4)
     
 
 
@@ -1608,7 +1657,7 @@ register_feature('E_vol_sig_vs_max', n_vol_sig_vs_max, vol_sig_vs_max)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1630,7 +1679,7 @@ register_feature('E_vol_sig_vs_nprev', n_vol_sig_vs_nprev, vol_sig_vs_nprev)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1672,13 +1721,13 @@ register_feature('E_highlow_gap_end', n_highlow_gap_end, highlow_gap_end)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1724,22 +1773,22 @@ register_feature('E_dayofmonth_sin', n_dayofmonth_sin, dayofmonth_sin)
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1760,7 +1809,7 @@ register_feature('E_signal_hour_norm', n_signal_hour_norm, signal_hour_norm)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1786,10 +1835,10 @@ register_feature('E_vol_sig_vs_mean', n_vol_sig_vs_mean, vol_sig_vs_mean)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1816,10 +1865,10 @@ register_feature('E_price_sig_vs_mean', n_price_sig_vs_mean, price_sig_vs_mean)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1843,10 +1892,10 @@ register_feature('E_numtrades_sig_vs_mean', n_numtrades_sig_vs_mean, numtrades_s
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1878,10 +1927,10 @@ register_feature('E_dollar_amount_sig_vs_mean', n_dollar_amount_sig_vs_mean, dol
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1899,7 +1948,7 @@ register_feature('E_close_vs_open', n_close_vs_open, close_vs_open, temporal=Tru
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     
 
 
@@ -1917,7 +1966,7 @@ register_feature('E_high_vs_low', n_high_vs_low, high_vs_low, temporal=True)
 
     infs: 0
     nans: 0
-    Shape: (23163, 21)
+    Shape: (800, 21)
     
 
 
@@ -1934,7 +1983,7 @@ register_feature('E_halt', n_halt, halt)
 
     infs: 0
     nans: 0
-    Shape: (23163, 1)
+    Shape: (800, 1)
     
 
 
@@ -1956,7 +2005,7 @@ register_feature('E_rtn_to_signal', n_rtn_to_signal, rtn_to_signal, temporal=Tru
 
     infs: 0
     nans: 0
-    Shape: (23163, 20)
+    Shape: (800, 20)
     
 
 
@@ -1987,7 +2036,7 @@ register_feature('E_price_bins', n_price_bins, price_bins, temporal=False)
 
     infs: 0
     nans: 0
-    Shape: (23163, 7)
+    Shape: (800, 7)
     
 
 ## Screening, engineered features
@@ -2001,7 +2050,7 @@ print(flattened_windows_E.shape)
 print(f'Number of engineered features: {sum([fam.n_features for fam in feature_families.values()])}')
 ```
 
-    (23163, 336)
+    (800, 336)
     Number of engineered features: 336
     
 
@@ -2033,7 +2082,7 @@ df_flattened_windows_E_eda.columns = range(len(df_flattened_windows_E_eda.column
 print(f'Shape of EDA set for screening: {df_flattened_windows_E_eda.shape}')
 ```
 
-    Shape of EDA set for screening: (16297, 337)
+    Shape of EDA set for screening: (561, 337)
     
 
 
@@ -2071,15 +2120,15 @@ for i in range(top_n_corr_E):
          Top 10 Pearson_E:                                  Top 10 Spearman_E:
                                              Pearson_E                                          Spearman_E
     1    Column 0 (rtn)                      1.0000000000   Column 0 (rtn)                      1.0000
-    2    Column 103 (E_crtn_l_slope_2_1)     -0.0620497185  Column 323 (E_rtn_to_signal_14)     0.1228
-    3    Column 49 (E_crtn_c_slope_2_1)      -0.0579383687  Column 322 (E_rtn_to_signal_13)     0.1221
-    4    Column 321 (E_rtn_to_signal_12)     0.0561372351   Column 324 (E_rtn_to_signal_15)     0.1205
-    5    Column 322 (E_rtn_to_signal_13)     0.0559966959   Column 321 (E_rtn_to_signal_12)     0.1204
-    6    Column 320 (E_rtn_to_signal_11)     0.0552272573   Column 262 (E_price_sig_vs_mean)    -0.1189
-    7    Column 319 (E_rtn_to_signal_10)     0.0532371311   Column 320 (E_rtn_to_signal_11)     0.1179
-    8    Column 323 (E_rtn_to_signal_14)     0.0529886203   Column 319 (E_rtn_to_signal_10)     0.1165
-    9    Column 22 (E_crtn_o_slope_2_1)      -0.0523057686  Column 325 (E_rtn_to_signal_16)     0.1155
-    10   Column 105 (E_crtn_l_slope_4_1)     -0.0513755648  Column 318 (E_rtn_to_signal_9)      0.1141
+    2    Column 299 (E_high_vs_low_12)       -0.2011416994  Column 307 (E_high_vs_low_20)       -0.1834
+    3    Column 332 (E_price_bins_3)         -0.1660170031  Column 299 (E_high_vs_low_12)       -0.1733
+    4    Column 297 (E_high_vs_low_10)       -0.1623664256  Column 312 (E_rtn_to_signal_3)      0.1724
+    5    Column 276 (E_close_vs_open_10)     -0.1581157555  Column 148 (E_vw_dist_20)           -0.1719
+    6    Column 140 (E_vw_dist_12)           -0.1522203027  Column 313 (E_rtn_to_signal_4)      0.1685
+    7    Column 138 (E_vw_dist_10)           -0.1439319678  Column 311 (E_rtn_to_signal_2)      0.1683
+    8    Column 202 (E_norm_n_slope_2_2)     -0.1413189665  Column 314 (E_rtn_to_signal_5)      0.1656
+    9    Column 306 (E_high_vs_low_19)       -0.1368561011  Column 47 (E_crtn_c_20)             -0.1630
+    10   Column 307 (E_high_vs_low_20)       -0.1354806747  Column 310 (E_rtn_to_signal_1)      0.1600
     
 
 
@@ -2091,12 +2140,12 @@ print(f'Mean of spearmans_abs (non-engineered features): {np.mean(spearmans_abs[
 print(f'Mean of spearmans_E_abs (engineered features): {np.mean(spearmans_E_abs[1:]):.5f}')
 ```
 
-    Mean of pearsons_abs (non-engineered features): 0.00678
-    Mean of pearsons_E_abs (engineered features): 0.01356
+    Mean of pearsons_abs (non-engineered features): 0.02717
+    Mean of pearsons_E_abs (engineered features): 0.05987
     
     
-    Mean of spearmans_abs (non-engineered features): 0.01959
-    Mean of spearmans_E_abs (engineered features): 0.03063
+    Mean of spearmans_abs (non-engineered features): 0.05585
+    Mean of spearmans_E_abs (engineered features): 0.07033
     
 
 
@@ -2108,12 +2157,12 @@ print(f'Mean top {top_n_corr} spearmans_abs (non-engineered features): {np.mean(
 print(f'Mean top {top_n_corr_E} spearmans_E_abs (engineered features): {np.mean(top_n_spear_E_abs[1:]):.5f}')
 ```
 
-    Mean top 20 pearsons_abs (non-engineered features): 0.01661
-    Mean top 10 pearsons_E_abs (engineered features): 0.05525
+    Mean top 20 pearsons_abs (non-engineered features): 0.09237
+    Mean top 10 pearsons_E_abs (engineered features): 0.15527
     
     
-    Mean top 20 spearmans_abs (non-engineered features): 0.05038
-    Mean top 10 spearmans_E_abs (engineered features): 0.11875
+    Mean top 20 spearmans_abs (non-engineered features): 0.10965
+    Mean top 10 spearmans_E_abs (engineered features): 0.16959
     
 
 Higher correlations for engineered features.
@@ -2176,16 +2225,16 @@ for i in range(n_top):
     
               Depth 1                   Depth 2                   Depth 10
     
-    1    E_price_mean         0.012     E_crtn_h_20          0.019     E_rtn_to_signal_6    0.156
-    2    E_crtn_l_slope_2_1   0.009     E_rtn_to_signal_12   0.017     E_crtn_o_slope_2_1   0.143
-    3    E_vw_dist_16         0.009     E_crtn_h_slope_2_1   0.017     E_rtn_to_signal_5    0.140
-    4    E_crtn_h_slope_2_1   0.009     E_rtn_to_signal_16   0.016     E_rtn_to_signal_8    0.139
-    5    E_crtn_c_slope_2_1   0.009     E_crtn_o_19          0.016     E_rtn_to_signal_10   0.136
-    6    E_crtn_h_slope_4_1   0.008     E_crtn_l_13          0.016     E_crtn_l_slope_2_1   0.136
-    7    E_rtn_to_signal_12   0.008     E_crtn_h_19          0.016     E_rtn_to_signal_9    0.132
-    8    E_crtn_c_17          0.007     E_rtn_to_signal_13   0.016     E_crtn_c_14          0.130
-    9    E_crtn_l_17          0.007     E_crtn_c_slope_1     0.015     E_rtn_to_signal_7    0.130
-    10   E_close_vs_open_16   0.007     E_crtn_l_slope_1     0.015     E_crtn_o_20          0.129
+    1    E_crtn_c_20          0.071     E_rtn_to_signal_19   0.172     E_vw_dist_6          0.766
+    2    E_price_sig_vs_mean  0.071     E_rtn_to_signal_18   0.160     E_norm_vol_slope_4_4 0.741
+    3    E_rtn_to_signal_1    0.071     E_close_vs_open_10   0.152     E_high_vs_low_2      0.729
+    4    E_rtn_to_signal_2    0.071     E_rtn_to_signal_17   0.150     E_crtn_o_9           0.728
+    5    E_rtn_to_signal_3    0.071     E_rtn_to_signal_20   0.142     E_vol_norm_5         0.725
+    6    E_rtn_to_signal_4    0.071     E_n_norm_3           0.136     E_high_vs_low_12     0.716
+    7    E_rtn_to_signal_5    0.071     E_high_vs_low_21     0.131     E_crtn_o_16          0.703
+    8    E_rtn_to_signal_6    0.071     E_price_mean         0.124     E_crtn_l_4           0.702
+    9    E_rtn_to_signal_7    0.071     E_signal_high_low    0.123     E_crtn_o_15          0.694
+    10   E_rtn_to_signal_8    0.071     E_rtn_to_signal_16   0.120     E_c2c_rtn_7          0.691
     
 
 
@@ -2202,16 +2251,16 @@ print(f'Mean depth{d} (engineered): {np.mean(np.array(top_d_E)[:, 1]):.4f}')
 ```
 
     R^2 from decision trees
-    Mean depth1 (non-engineered): 0.0131
-    Mean depth1 (engineered): 0.0085
+    Mean depth1 (non-engineered): 0.0166
+    Mean depth1 (engineered): 0.0706
     
     
-    Mean depth2 (non-engineered): 0.0151
-    Mean depth2 (engineered): 0.0162
+    Mean depth2 (non-engineered): 0.1331
+    Mean depth2 (engineered): 0.1411
     
     
-    Mean depth10 (non-engineered): 0.0744
-    Mean depth10 (engineered): 0.1371
+    Mean depth10 (non-engineered): 0.7670
+    Mean depth10 (engineered): 0.7195
     
 
 ## Variable selection (heuristic)
@@ -2411,10 +2460,10 @@ print("X_test.shape:", X_flat_test.shape)
 print("y_binary_test.shape:", y_binary_test.shape)
 ```
 
-    X_train.shape: (16297, 89)
-    y_binary_train.shape: (16297,)
-    X_test.shape: (6866, 89)
-    y_binary_test.shape: (6866,)
+    X_train.shape: (561, 89)
+    y_binary_train.shape: (561,)
+    X_test.shape: (239, 89)
+    y_binary_test.shape: (239,)
     
 
 
@@ -2532,10 +2581,10 @@ train_dataset_mlp = TensorDataset(X_flat_train_t, y_binary_train_tensor)
 train_loader_mlp = DataLoader(train_dataset_mlp, batch_size=64, shuffle=True)
 ```
 
-    torch.Size([16297, 89])
-    torch.Size([16297, 1])
-    torch.Size([6866, 89])
-    torch.Size([6866, 1])
+    torch.Size([561, 89])
+    torch.Size([561, 1])
+    torch.Size([239, 89])
+    torch.Size([239, 1])
     
 
 
@@ -2616,12 +2665,12 @@ for epoch in range(n_epochs):
 print("Training done MLP")
 ```
 
-    Epoch 0/5 | Loss: 0.6919 | Train.acc: 0.5317 | Val.acc: 0.5179
-    Epoch 1/5 | Loss: 0.6864 | Train.acc: 0.5567 | Val.acc: 0.5494
-    Epoch 2/5 | Loss: 0.6824 | Train.acc: 0.5664 | Val.acc: 0.5564
-    Epoch 3/5 | Loss: 0.6838 | Train.acc: 0.5672 | Val.acc: 0.5575
-    Epoch 4/5 | Loss: 0.6813 | Train.acc: 0.5713 | Val.acc: 0.5565
-    Epoch 5/5 | Loss: 0.6829 | Train.acc: 0.5723 | Val.acc: 0.5575
+    Epoch 0/5 | Loss: 0.6917 | Train.acc: 0.5294 | Val.acc: 0.4603
+    Epoch 1/5 | Loss: 0.6919 | Train.acc: 0.5294 | Val.acc: 0.4561
+    Epoch 2/5 | Loss: 0.6898 | Train.acc: 0.5294 | Val.acc: 0.4561
+    Epoch 3/5 | Loss: 0.6888 | Train.acc: 0.5294 | Val.acc: 0.4561
+    Epoch 4/5 | Loss: 0.6875 | Train.acc: 0.5312 | Val.acc: 0.4519
+    Epoch 5/5 | Loss: 0.6863 | Train.acc: 0.5383 | Val.acc: 0.4770
     Training done MLP
     
 
@@ -2900,12 +2949,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel")
 ```
 
-    Epoch 0/5 | Loss: 0.6951 | Train.acc: 0.4796 | Val.acc: 0.4945
-    Epoch 1/5 | Loss: 0.6848 | Train.acc: 0.5605 | Val.acc: 0.5542
-    Epoch 2/5 | Loss: 0.6829 | Train.acc: 0.5677 | Val.acc: 0.5574
-    Epoch 3/5 | Loss: 0.6819 | Train.acc: 0.5699 | Val.acc: 0.5606
-    Epoch 4/5 | Loss: 0.6803 | Train.acc: 0.5707 | Val.acc: 0.5588
-    Epoch 5/5 | Loss: 0.6802 | Train.acc: 0.5719 | Val.acc: 0.5594
+    Epoch 0/5 | Loss: 0.6900 | Train.acc: 0.5294 | Val.acc: 0.4393
+    Epoch 1/5 | Loss: 0.6915 | Train.acc: 0.5258 | Val.acc: 0.4561
+    Epoch 2/5 | Loss: 0.6872 | Train.acc: 0.5401 | Val.acc: 0.5063
+    Epoch 3/5 | Loss: 0.6848 | Train.acc: 0.5882 | Val.acc: 0.5105
+    Epoch 4/5 | Loss: 0.6835 | Train.acc: 0.5668 | Val.acc: 0.5188
+    Epoch 5/5 | Loss: 0.6799 | Train.acc: 0.5865 | Val.acc: 0.5272
     Training done FusionModel
     
 
@@ -2975,13 +3024,13 @@ print(f"\nMajority-class-acc: {majority_class_accuracy:.3f}")
     Results for classification threshold = 0.5:
     
         Model       acc_train    acc_test    auc
-    RandomForest      1.000       0.544     0.551
-    ExtraTrees        1.000       0.548     0.561
-    XGBoost           0.763       0.557     0.558
-    MLP               0.573       0.558     0.568
-    FusionModel       0.570       0.559     0.572
+    RandomForest      1.000       0.556     0.614
+    ExtraTrees        1.000       0.510     0.539
+    XGBoost           1.000       0.552     0.587
+    MLP               0.537       0.477     0.520
+    FusionModel       0.597       0.527     0.547
     
-    Majority-class-acc: 0.518
+    Majority-class-acc: 0.544
     
 
 
@@ -3186,39 +3235,39 @@ print_trade_metrics(trade_metrics_each_model_binary, reg=False)
     
     Threshold: 0.6
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest          460       277       0.60       0.0076        0.104     
-    ExtraTrees            450       273       0.61       0.0074        0.102     
-    XGBoost               506       285       0.56       0.0016        0.022     
-    MLP                   169       108       0.64       0.0064        0.072     
-    FusionModel           295       186       0.63       0.0061        0.078     
+    RandomForest          42        22        0.52       0.0086        0.152     
+    ExtraTrees            34        19        0.56       0.0012        0.028     
+    XGBoost               61        34        0.56       0.0112        0.206     
+    MLP                   0         0         --         --            --        
+    FusionModel           1         1         1.00       0.0256        nan       
     
     Threshold: 0.65
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest          260       165       0.63       0.0037        0.043     
-    ExtraTrees            243       148       0.61       0.0048        0.054     
-    XGBoost               283       164       0.58       0.0017        0.021     
-    MLP                   32        21        0.66       0.0106        0.119     
-    FusionModel           112       78        0.70       0.0111        0.108     
+    RandomForest          24        13        0.54       0.0020        0.037     
+    ExtraTrees            21        11        0.52       -0.0010       -0.026    
+    XGBoost               47        30        0.64       0.0151        0.325     
+    MLP                   0         0         --         --            --        
+    FusionModel           1         1         1.00       0.0256        nan       
     
     Threshold: 0.7
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest          110       69        0.63       0.0048        0.049     
-    ExtraTrees            115       65        0.57       0.0035        0.034     
-    XGBoost               126       75        0.60       0.0024        0.026     
-    MLP                   11        8         0.73       -0.0041       -0.055    
-    FusionModel           25        17        0.68       -0.0167       -0.103    
+    RandomForest          11        7         0.64       0.0121        0.544     
+    ExtraTrees            11        4         0.36       -0.0087       -0.314    
+    XGBoost               38        24        0.63       0.0170        0.358     
+    MLP                   0         0         --         --            --        
+    FusionModel           0         0         --         --            --        
     
     Threshold: 0.8
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest          15        11        0.73       0.0243        0.483     
-    ExtraTrees            16        10        0.62       -0.0006       -0.006    
-    XGBoost               13        7         0.54       0.0239        0.455     
-    MLP                   6         3         0.50       -0.0339       -0.386    
-    FusionModel           4         2         0.50       -0.0219       -0.287    
+    RandomForest          1         1         1.00       0.0251        nan       
+    ExtraTrees            1         1         1.00       0.0251        nan       
+    XGBoost               26        15        0.58       0.0113        0.251     
+    MLP                   0         0         --         --            --        
+    FusionModel           0         0         --         --            --        
     
     Threshold: 0
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    baseline              1229      574       0.47       -0.0018       -0.023    
+    baseline              144       77        0.53       0.0061        0.084     
     
 
 ## Continuous return target, same models
@@ -3251,8 +3300,8 @@ print(X_flat_train.shape)
 print(y_train.shape)
 ```
 
-    (16297, 89)
-    (16297,)
+    (561, 89)
+    (561,)
     
 
 
@@ -3335,8 +3384,8 @@ results_reg.append(ModelResultReg(name="XGBoost_reg", predictions_train=xgb_pred
 print("Training done XGBoost_reg")
 ```
 
-    [0]	validation_0-rmse:0.07935
-    [49]	validation_0-rmse:0.02035
+    [0]	validation_0-rmse:0.06235
+    [49]	validation_0-rmse:0.00336
     Training done XGBoost_reg
     
 
@@ -3443,12 +3492,12 @@ for epoch in range(n_epochs):
 print("Training done MLP_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0231 | loss_val: 0.8759
-    Epoch 1/5 | loss_train: 1.0149 | loss_val: 0.8764
-    Epoch 2/5 | loss_train: 1.0128 | loss_val: 1.0471
-    Epoch 3/5 | loss_train: 1.0066 | loss_val: 0.8446
-    Epoch 4/5 | loss_train: 0.9974 | loss_val: 0.8577
-    Epoch 5/5 | loss_train: 0.9978 | loss_val: 0.8430
+    Epoch 0/5 | loss_train: 1.0021 | loss_val: 1.2836
+    Epoch 1/5 | loss_train: 1.0032 | loss_val: 1.2692
+    Epoch 2/5 | loss_train: 0.9975 | loss_val: 1.2778
+    Epoch 3/5 | loss_train: 0.9936 | loss_val: 1.2740
+    Epoch 4/5 | loss_train: 0.9899 | loss_val: 1.2769
+    Epoch 5/5 | loss_train: 0.9877 | loss_val: 1.2871
     Training done MLP_reg
     
 
@@ -3524,12 +3573,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0112 | loss_val: 0.8516
-    Epoch 1/5 | loss_train: 1.0012 | loss_val: 0.8501
-    Epoch 2/5 | loss_train: 0.9992 | loss_val: 0.8500
-    Epoch 3/5 | loss_train: 0.9949 | loss_val: 0.8472
-    Epoch 4/5 | loss_train: 0.9891 | loss_val: 0.8613
-    Epoch 5/5 | loss_train: 0.9796 | loss_val: 0.8540
+    Epoch 0/5 | loss_train: 0.9967 | loss_val: 1.2652
+    Epoch 1/5 | loss_train: 1.0107 | loss_val: 1.2694
+    Epoch 2/5 | loss_train: 0.9896 | loss_val: 1.3014
+    Epoch 3/5 | loss_train: 0.9853 | loss_val: 1.3027
+    Epoch 4/5 | loss_train: 0.9762 | loss_val: 1.3129
+    Epoch 5/5 | loss_train: 0.9707 | loss_val: 1.3367
     Training done FusionModel_reg
     
 
@@ -3580,39 +3629,39 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     
     Threshold: 0.02
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest_reg      328       151       0.46       -0.0019       -0.016    
-    ExtraTrees_reg        364       178       0.49       -0.0068       -0.065    
-    XGBoost_reg           397       201       0.51       0.0013        0.011     
-    MLP_reg               1         0         0.00       -0.1638       nan       
-    FusionModel_reg       37        18        0.49       -0.0214       -0.173    
+    RandomForest_reg      15        8         0.53       0.0181        0.198     
+    ExtraTrees_reg        20        11        0.55       0.0081        0.172     
+    XGBoost_reg           28        15        0.54       0.0083        0.115     
+    MLP_reg               0         0         --         --            --        
+    FusionModel_reg       0         0         --         --            --        
     
     Threshold: 0.06
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest_reg      48        22        0.46       -0.0073       -0.046    
-    ExtraTrees_reg        50        25        0.50       0.0031        0.018     
-    XGBoost_reg           74        37        0.50       -0.0069       -0.046    
+    RandomForest_reg      1         1         1.00       0.0051        nan       
+    ExtraTrees_reg        1         1         1.00       0.0051        nan       
+    XGBoost_reg           2         2         1.00       0.1523        1.035     
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       6         2         0.33       -0.0840       -0.958    
+    FusionModel_reg       0         0         --         --            --        
     
     Threshold: 0.08
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest_reg      25        12        0.48       -0.0117       -0.083    
-    ExtraTrees_reg        24        10        0.42       -0.0254       -0.166    
-    XGBoost_reg           42        17        0.40       -0.0087       -0.048    
+    RandomForest_reg      1         1         1.00       0.0051        nan       
+    ExtraTrees_reg        1         1         1.00       0.0051        nan       
+    XGBoost_reg           2         2         1.00       0.1523        1.035     
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       3         2         0.67       -0.0265       -0.299    
+    FusionModel_reg       0         0         --         --            --        
     
     Threshold: 0.1
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    RandomForest_reg      19        9         0.47       -0.0051       -0.033    
-    ExtraTrees_reg        14        7         0.50       0.0139        0.082     
-    XGBoost_reg           20        6         0.30       -0.0279       -0.113    
+    RandomForest_reg      1         1         1.00       0.0051        nan       
+    ExtraTrees_reg        0         0         --         --            --        
+    XGBoost_reg           2         2         1.00       0.1523        1.035     
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       2         2         1.00       0.0349        1.592     
+    FusionModel_reg       0         0         --         --            --        
     
     Threshold: -inf
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
-    baseline              1229      574       0.47       -0.0018       -0.023    
+    baseline              144       77        0.53       0.0061        0.084     
     
 
 ## Significance measures
@@ -3715,10 +3764,6 @@ top_metrics = sorted(top_metrics, key=lambda x: x.mean_return, reverse=True)
 ```python
 # Print summary
 
-import textwrap
-
-print("Below is a summary of the top 5 model-selected trading sets, ranked by mean return, for the given training and test sets.\n")
-
 print(f"Training set period: {start_date_eda} to {end_date_eda}")
 print(f"Test set period: {start_date_test} to {end_date_test}\n")
 print(f"Number of trades in training period: {len(returns_train)}")
@@ -3727,7 +3772,11 @@ print(f"Number of trades in test period: {len(returns_test)}")
 
 print("\n---------------------------------------------------------\n")
 
-# Show top performing modeld
+# Show top performing models
+
+
+print(f"Summary of the top {n_top} model-selected trading sets, each consisting of at least {min_n_trades} trades.\n"
+f"The ranking is based on mean return.\n")
 
 head_str = (
 f"{'Model':<19}"
@@ -3737,8 +3786,8 @@ f"{'n_correct':<11}"
 f"{'hit_rate':<10}"
 f"{'mean_return':<13}"
 f"{'sharpe':<8}"
-f"{'p_mean':<8}"
 f"{'p_hitrate':<11}"
+f"{'p_mean':<8}"
 f"{'p_sharpe':<10}"
 )
 
@@ -3754,12 +3803,13 @@ for m in top_metrics:
         f"{m.n_correct:<10}"
         f"{fmt(m.hitrate, '.2f'):<10}"
         f"{fmt(m.mean_return, '.4f'):<12}"
-        f"{fmt(m.sharpe, '.2f'):<8}"
-        f"{fmt(m.perm_pval_mean, '.3f'):<9}"
+        f"{fmt(m.sharpe, '.2f'):<9}"
         f"{fmt(m.perm_pval_hitrate, '.3f'):<10}"
+        f"{fmt(m.perm_pval_mean, '.3f'):<8}"
         f"{fmt(m.perm_pval_sharpe, '.3f'):<11}"
     )
 
+# Print baseline
 for m in all_trade_metrics:
     if m.threshold == -np.inf: # corresponds to baseline
         print(
@@ -3769,31 +3819,32 @@ for m in all_trade_metrics:
             f"{m.n_correct:<10}"
             f"{m.hitrate:<10.2f}"
             f"{m.mean_return:<12.4f}"
-            f"{m.sharpe:<8.2f}"
-            f"{m.perm_pval_mean:<9.3f}"
+            f"{m.sharpe:<9.2f}"
             f"{m.perm_pval_hitrate:<10.3f}"
+            f"{m.perm_pval_mean:<8.3f}"
             f"{m.perm_pval_sharpe:<12.3f}"
         )
         break
 ```
 
-    Below is a summary of the top 5 model-selected trading sets, ranked by mean return, for the given training and test sets.
+    Training set period: 2024-12-30 to 2025-03-13
+    Test set period: 2025-03-17 to 2025-04-17
     
-    Training set period: 2024-12-30 to 2025-03-20
-    Test set period: 2025-03-21 to 2025-04-17
-    
-    Number of trades in training period: 16297
-    Number of trades in test period: 6866
+    Number of trades in training period: 561
+    Number of trades in test period: 239
     
     ---------------------------------------------------------
     
-    Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
-    RandomForest          0.8        15        11        0.73      0.0243      0.48    0.101    0.044     0.028      
-    XGBoost               0.8        13        7         0.54      0.0239      0.45    0.116    0.448     0.049      
-    ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.223    0.553     0.375      
-    FusionModel           0.65       112       78        0.70      0.0111      0.11    0.058    0.000     0.116      
-    MLP                   0.65       32        21        0.66      0.0106      0.12    0.202    0.037     0.243      
-    baseline              --         1229      574       0.47      -0.0018     -0.02   0.769    0.863     0.760       
+    Summary of the top 5 model-selected trading sets, each consisting of at least 10 trades.
+    The ranking is based on mean return.
+    
+    Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_hitrate  p_mean  p_sharpe  
+    RandomForest_reg      0.02       15        8         0.53      0.0181      0.20     0.637     0.313   0.388      
+    XGBoost               0.7        38        24        0.63      0.0170      0.36     0.178     0.281   0.046      
+    XGBoost               0.65       47        30        0.64      0.0151      0.32     0.124     0.319   0.053      
+    RandomForest          0.7        11        7         0.64      0.0121      0.54     0.380     0.421   0.067      
+    XGBoost               0.8        26        15        0.58      0.0113      0.25     0.445     0.438   0.237      
+    baseline              --         144       77        0.53      0.0061      0.08     0.620     0.702   0.675       
     
 
 
@@ -3833,7 +3884,7 @@ for i in range(1, n_draws + 1):
         means.append(mean)
 
         
-    if i % 5000 == 0:
+    if i % 10000 == 0:
         print(f"{i} / {n_draws} draws complete")
         
     max_mean = max(means)
@@ -3860,9 +3911,9 @@ print(f"\nGlobal p-value (independent draws): {p_value_global}")
     50000 / 50000 draws complete
     
     Total number of (model, threshold) pairs from which the top performing
-    (model, threshold) pair, i.e., (RandomForest, 0.8), has been selected: 40
+    (model, threshold) pair, i.e., (RandomForest_reg, 0.02), has been selected: 40
     
-    Global p-value (independent draws): 0.92476
+    Global p-value (independent draws): 0.9999
     
 
 
@@ -3919,7 +3970,7 @@ for _ in range(n_draws):
             means.append(mean)
 
             
-    if count % 5000 == 0:
+    if count % 10000 == 0:
         print(f"{count} / {n_draws} draws complete")
     count += 1
             
@@ -3943,7 +3994,7 @@ print(f"\nGlobal p-value (nested structure): {p_global:.3f}")
     45000 / 50000 draws complete
     50000 / 50000 draws complete
     
-    Global p-value (nested structure): 0.871
+    Global p-value (nested structure): 0.994
     
 
 ## Appendix
