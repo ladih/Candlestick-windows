@@ -1,10 +1,6 @@
 # Trade selection using machine learning and candlestick patterns
 
-This project explores the performance of machine learning models used for accepting or rejetcing trades, given a certain signal candle and historical candlestick data.
-
-
-
-ses machine learning models to decide whether
+This project explores the performance of machine learning models used for accepting or rejecting trades, given a certain signal candle and historical candlestick data.
 
 
 
