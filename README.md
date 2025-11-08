@@ -38,7 +38,7 @@ baseline              --         1229      574       0.47      -0.0018     -0.02
 - **sharpe** – Sharpe ratio of selected trade returns  
 - **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests 
 
-### Models
+## Models
 
 Models tested include:
 
@@ -52,7 +52,7 @@ Models ending with `_reg` corresond to regressors that predict continuous return
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
 
 
-#### Data
+### Data
 
 The data consists of preprocessed candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window and the 21st candlestick for each window satisfies
 
