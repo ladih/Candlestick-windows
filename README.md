@@ -26,6 +26,7 @@ FusionModel           0.65       180       119       0.66      0.0126      0.14 
 RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015    0.000     0.009      
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
+**Note:** These results were generated using historical data not included in this repository.
 
 ### Metric definitions
 
@@ -38,7 +39,7 @@ baseline              --         1229      574       0.47      -0.0018     -0.02
 - **sharpe** – Sharpe ratio of selected trade returns  
 - **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests 
 
-## Models
+### Models
 
 Models tested include:
 
