@@ -13,10 +13,19 @@ Test set period: 2025-03-21 to 2025-04-17
 Number of trades in training period: 16297
 Number of trades in test period: 6866
 
----------------------------------------------------------
+Number of (model, threshold) pairs evaluated: 40
 
-Summary of the top 5 model-selected trading sets, each restricted to contain at least 10 trades.
-The ranking is based on mean return.
+Models used:
+RandomForest
+ExtraTrees
+XGBoost
+FusionModel
+RandomForest_reg
+ExtraTrees_reg
+XGBoost_reg
+FusionModek_reg
+
+Summary of top 5 performing model-selected trading sets with $\geq$ 10 trades, ranked by mean return:
 
 Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
 RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
