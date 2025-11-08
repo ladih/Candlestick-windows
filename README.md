@@ -57,14 +57,12 @@ The model with the highest mean return has been chosen among 40 possible (model,
 
 ## Data
 
-The data consists of preprocessed candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window and the 21st candlestick for each window satisfies
+The dataset consists of 26-minute candlestick windows sampled from 1-minute historical data. Each window contains a signal candle at minute 21, defined as a candle whose absolute percentage change satisfies
 
-$$\left|\frac{\text{c}\_\text{21} - \text{o}\_\text{21}}{\text{o}\_\text{21}}\right|\geq 0.04,$$
+$$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04.$$
 
-where we used the notation $\text{o}\_\text{i}$ for the opening price of candle $i$, and $\text{c}\_\text{i}$ for the closing price of candle $i$. This candlesticke is the **signal candle** of the window.
+The target return for each window is defined as the percentage change over the five minutes following the signal candle:
 
-The **return** for each window is defined statically to be
+$$\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
-$$\left|\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}\right|.$$
-
- The windows were extracted from daily 1-minute data downloaded from https://massive.com/
+Windows were extracted from daily 1-minute data downloaded from massive.com
