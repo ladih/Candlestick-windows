@@ -51,7 +51,7 @@ Global p-value for top 1 mean return (0.0243): 0.87
 - **sharpe** – Sharpe ratio of selected trade returns  
 - **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests
 
-### Statistical significance of the example run (Global p-value)
+### Global p-value
 
 The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A p-value test mimicing this process of taking the maximum mean return of 40 random samples from the test set gives a p-value of 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
 
