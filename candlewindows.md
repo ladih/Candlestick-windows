@@ -1,7 +1,5 @@
 # Trade selection using machine learning and candlestick patterns
 
-## Goal
-
 The goal of this project is to build, compare, and evaluate machine learning models that identify trading opportunities based on historical candlestick data and signal candles. Models are trained and tested over specific periods, and their performance is measured by metrics such as hit rate, mean return, and Sharpe ratio for the selected trades.
 
 ## Example run
@@ -17,13 +15,13 @@ Number of trades in test period: 6866
 
 ---------------------------------------------------------
 
-Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
-RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
-XGBoost               0.8        13        7         0.54      0.0239      0.45    0.117    0.450     0.048      
-ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.220    0.550     0.372      
-FusionModel           0.65       180       119       0.66      0.0126      0.14    0.013    0.000     0.028      
-RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015    0.000     0.009      
-baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
+Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_hitrate  p_mean  p_sharpe  
+RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100     0.044    0.028      
+XGBoost               0.8        13        7         0.54      0.0239      0.45    0.117     0.450    0.048      
+ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08    0.220     0.550    0.372      
+FusionModel           0.65       180       119       0.66      0.0126      0.14    0.013     0.000    0.028      
+RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015     0.000    0.009      
+baseline              --         1229      574       0.47      -0.0018     -0.02   0.770     0.863    0.760
 ```
 
 **baseline**: A strategy whose only restriction is that at most one trade is active at any given time\
