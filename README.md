@@ -23,7 +23,7 @@ FusionModel
 RandomForest_reg
 ExtraTrees_reg
 XGBoost_reg
-FusionModek_reg
+FusionModel_reg
 
 Summary of top 5 performing model-selected trading sets with at least 10 trades, ranked by mean return:
 
