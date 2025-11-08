@@ -29,16 +29,20 @@ baseline              --         1229      574       0.47      -0.0018     -0.02
 
 ### Metric definitions
 
-- **baseline** – strategy that takes all non-overlaping trades
+- **baseline** – strategy that takes all possible non-overlapping trades
 - **threshold** – minimum predicted probability/return to open a trade  
 - **n_trades** – number of non-overlaping trades meeting the threshold
 - **n_correct** – number of profitable trades  
 - **hit_rate** – `n_correct / n_trades`  
 - **mean_return** – average return per trade  
 - **sharpe** – Sharpe ratio of selected trade returns  
-- **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests 
+- **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests
 
-### Models
+### Statistical significance of the example run
+
+The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A p-value test mimicing this process of taking the maximum mean return of 40 random samples from the test set gives a p-value of 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+
+## Models
 
 Models tested include:
 
@@ -51,6 +55,24 @@ Models tested include:
 Models ending with `_reg` corresond to regressors that predict continuous returns, while those without `_reg`
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
 
-### Statistical significance
+## Data
 
-The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the `n_trades` of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+The dataset consists ~ 20,000 one-minute candlestick windows, each containing 26 candlesticks. Each window contains a signal candle at candle 21, defined as a candle whose absolute percentage change satisfies
+
+$$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04.$$
+
+The target return for each window is defined as the percentage change from the opening price of the candle after the signal candle to the closing price of the fifth candle after the signal candle:
+
+$$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
+
+Windows were extracted from one-minute data downloaded from [massive.com](https://massive.com).
+
+---
+
+**Notebook content structure:**
+
+1. Data preparation  
+2. Feature engineering 
+3. Variable selection (heuristic)
+4. Model building and training 
+5. Evaluation
