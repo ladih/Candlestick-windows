@@ -27,7 +27,7 @@ RandomForest          0.6        460       277       0.60      0.0076      0.10 
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
 
-## Metric definitions
+### Metric definitions
 
 - **baseline** – strategy that takes all non-overlaping trades
 - **threshold** – minimum predicted probability/return to open a trade  
@@ -38,7 +38,7 @@ baseline              --         1229      574       0.47      -0.0018     -0.02
 - **sharpe** – Sharpe ratio of selected trade returns  
 - **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests 
 
-## Models
+### Models
 
 Models tested include:
 
@@ -46,52 +46,16 @@ Models tested include:
 - **ExtraTrees** (classifier & regressor)
 - **XGBoost** (classifier & regressor)
 - **MLP** (classifier & regressor)
-- **FusionModel** (classifier & regressor) (model using encoders to handle different types of features families)
-- **Baseline** (no filter beyond signal candle)
-
-
+- **FusionModel** - neural network that uses encoders to handle different types of feature families (classifier & regressor)
 
 Models ending with `_reg` corresond to regressors that predict continuous returns, while those without `_reg`
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
 
-## Statistical significance of the example run
+### Statistical significance
 
-The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the n_trades of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the `n_trades` of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
 
---------------------------------------------
---------------------------------------------
---------------------------------------------
-----------------------------------------------------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
-----------------------------------------------------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
-----------------------------------------------------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
-----------------------------------------------------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
---------------------------------------------
-
-# Code part
+# Trade selection using machine learning and candlestick patterns
 
 ## Content structure
 1. Data preparation  
@@ -102,7 +66,16 @@ The model with the highest mean return has been chosen among 40 possible (model,
 
 ## Data
 
-The data consists of candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window, where the 21st candlestick is a "signal candle" that is either up more than 4% or down more than -4%. The return for each window is from the opening price of the candle after the signal candle to the closing price of the fifth candle after the signal candle.
+The data consists of preprocessed candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window with the 21st satisfying
+
+$$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04,$$
+
+where we have use dthe notation $\text{o}_\text{i}$ and $\text{c}_\text{i}$ for the opening and closing price of candle $i$, respectively. This candle will be called the **signal candle** of the window.
+
+The return for each window is defined statically to be
+
+
+$$\left|\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}\right|.$$
 
 The windows were collected for stocks that had satisfied certain daily thresholds for volume, price, and (high-low)/low. For more details on how the windows were collected, see the appendix.
 
@@ -114,12 +87,12 @@ import os
 import pandas as pd
 import numpy as np
 
-folder = "windows"
-windows_csv_names = os.listdir(folder)
+DATA_DIR = "data/windows"
+windows_csv_names = os.listdir(DATA_DIR)
 windows = []
 
 for i, window_name in enumerate(windows_csv_names, start=1):
-    w_df = pd.read_csv(os.path.join(folder, window_name))
+    w_df = pd.read_csv(os.path.join(DATA_DIR, window_name))
     ticker = window_name.split('_')[0]
     w_df['ticker'] = ticker
     windows.append(w_df)
@@ -507,7 +480,7 @@ windows[0]
 
 
 
-**Note:** Minute difference between rows doesn't have to be 1: candles with no volume are not included.
+**Note:** The minute difference between candles/rows doesn't have to be 1: candles with 0 trades/transactions (`n`) are not included.
 
 
 ```python
@@ -727,7 +700,7 @@ plt.show()
 
 
     
-![png](output_29_0.png)
+![png](output_28_0.png)
     
 
 
@@ -749,7 +722,7 @@ plt.show()
 
 
     
-![png](output_31_0.png)
+![png](output_30_0.png)
     
 
 
@@ -786,7 +759,7 @@ plt.show()
 
 
     
-![png](output_33_0.png)
+![png](output_32_0.png)
     
 
 
@@ -823,7 +796,7 @@ plt.show()
 
 
     
-![png](output_36_0.png)
+![png](output_35_0.png)
     
 
 
@@ -855,7 +828,7 @@ plt.show()
 
 
     
-![png](output_38_0.png)
+![png](output_37_0.png)
     
 
 
@@ -1084,7 +1057,7 @@ plt.show()
 
 
     
-![png](output_51_0.png)
+![png](output_50_0.png)
     
 
 
@@ -2668,12 +2641,12 @@ for epoch in range(n_epochs):
 print("Training done MLP")
 ```
 
-    Epoch 0/5 | Loss: 0.6942 | Train.acc: 0.5023 | Val.acc: 0.5157
-    Epoch 1/5 | Loss: 0.6864 | Train.acc: 0.5578 | Val.acc: 0.5456
-    Epoch 2/5 | Loss: 0.6854 | Train.acc: 0.5684 | Val.acc: 0.5556
-    Epoch 3/5 | Loss: 0.6828 | Train.acc: 0.5678 | Val.acc: 0.5577
-    Epoch 4/5 | Loss: 0.6810 | Train.acc: 0.5711 | Val.acc: 0.5551
-    Epoch 5/5 | Loss: 0.6819 | Train.acc: 0.5706 | Val.acc: 0.5481
+    Epoch 0/5 | Loss: 0.6973 | Train.acc: 0.4628 | Val.acc: 0.4758
+    Epoch 1/5 | Loss: 0.6861 | Train.acc: 0.5586 | Val.acc: 0.5552
+    Epoch 2/5 | Loss: 0.6835 | Train.acc: 0.5683 | Val.acc: 0.5567
+    Epoch 3/5 | Loss: 0.6832 | Train.acc: 0.5680 | Val.acc: 0.5545
+    Epoch 4/5 | Loss: 0.6818 | Train.acc: 0.5717 | Val.acc: 0.5549
+    Epoch 5/5 | Loss: 0.6808 | Train.acc: 0.5706 | Val.acc: 0.5571
     Training done MLP
     
 
@@ -2741,7 +2714,7 @@ class EncoderTemporal(nn.Module):
         self.rnn = nn.GRU(input_dim, hidden_dim, batch_first=True)
         self.proj = nn.Linear(hidden_dim, embedding_dim)
         self.act = nn.ReLU()
-        
+
     def forward(self, x):
         out, h_n = self.rnn(x)
         embedding = self.act(self.proj(h_n[-1]))
@@ -2952,12 +2925,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel")
 ```
 
-    Epoch 0/5 | Loss: 0.6971 | Train.acc: 0.4654 | Val.acc: 0.4827
-    Epoch 1/5 | Loss: 0.6847 | Train.acc: 0.5631 | Val.acc: 0.5530
-    Epoch 2/5 | Loss: 0.6834 | Train.acc: 0.5644 | Val.acc: 0.5536
-    Epoch 3/5 | Loss: 0.6826 | Train.acc: 0.5668 | Val.acc: 0.5564
-    Epoch 4/5 | Loss: 0.6817 | Train.acc: 0.5684 | Val.acc: 0.5603
-    Epoch 5/5 | Loss: 0.6811 | Train.acc: 0.5681 | Val.acc: 0.5600
+    Epoch 0/5 | Loss: 0.6910 | Train.acc: 0.5511 | Val.acc: 0.5390
+    Epoch 1/5 | Loss: 0.6848 | Train.acc: 0.5589 | Val.acc: 0.5593
+    Epoch 2/5 | Loss: 0.6825 | Train.acc: 0.5682 | Val.acc: 0.5581
+    Epoch 3/5 | Loss: 0.6811 | Train.acc: 0.5699 | Val.acc: 0.5607
+    Epoch 4/5 | Loss: 0.6806 | Train.acc: 0.5691 | Val.acc: 0.5514
+    Epoch 5/5 | Loss: 0.6798 | Train.acc: 0.5694 | Val.acc: 0.5618
     Training done FusionModel
     
 
@@ -3030,8 +3003,8 @@ print(f"\nMajority-class-acc: {majority_class_accuracy:.3f}")
     RandomForest      1.000       0.544     0.551
     ExtraTrees        1.000       0.548     0.561
     XGBoost           0.763       0.557     0.558
-    MLP               0.568       0.548     0.567
-    FusionModel       0.575       0.560     0.571
+    MLP               0.573       0.557     0.571
+    FusionModel       0.576       0.562     0.571
     
     Majority-class-acc: 0.518
     
@@ -3205,8 +3178,11 @@ def print_trade_metrics(trade_metrics_each_model, reg=False):
     grouped_by_threshold = defaultdict(list)
     for metric in trade_metrics_each_model:
         grouped_by_threshold[metric.threshold].append(metric)
-    
-    print("Trade metrics given trades resulting from different models and different thresholds on predicted probability:")
+    if reg:
+        pred_text = "return"
+    else:
+        pred_text = "probability"
+    print(f"Trade metrics given trades resulting from different models and different thresholds on predicted {pred_text}:")
     head_str = f"{'':<19}{'n_trades':<10}{'n_correct':<12}{'hit rate':<11}{'mean_return':<14}{'Sharpe':<10}"
     
     for threshold, metrics in grouped_by_threshold.items():
@@ -3241,32 +3217,32 @@ print_trade_metrics(trade_metrics_each_model_binary, reg=False)
     RandomForest          460       277       0.60       0.0076        0.104     
     ExtraTrees            450       273       0.61       0.0074        0.102     
     XGBoost               506       285       0.56       0.0016        0.022     
-    MLP                   54        36        0.67       0.0060        0.066     
-    FusionModel           335       215       0.64       0.0091        0.132     
+    MLP                   283       177       0.63       0.0041        0.048     
+    FusionModel           196       128       0.65       0.0079        0.098     
     
     Threshold: 0.65
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          260       165       0.63       0.0037        0.043     
     ExtraTrees            243       148       0.61       0.0048        0.054     
     XGBoost               283       164       0.58       0.0017        0.021     
-    MLP                   7         5         0.71       -0.0258       -0.310    
-    FusionModel           89        58        0.65       0.0132        0.160     
+    MLP                   49        32        0.65       -0.0046       -0.037    
+    FusionModel           50        32        0.64       -0.0002       -0.002    
     
     Threshold: 0.7
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          110       69        0.63       0.0048        0.049     
     ExtraTrees            115       65        0.57       0.0035        0.034     
     XGBoost               126       75        0.60       0.0024        0.026     
-    MLP                   4         3         0.75       -0.0096       -0.117    
-    FusionModel           12        8         0.67       -0.0035       -0.041    
+    MLP                   15        9         0.60       -0.0547       -0.290    
+    FusionModel           5         2         0.40       -0.1608       -0.562    
     
     Threshold: 0.8
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest          15        11        0.73       0.0243        0.483     
     ExtraTrees            16        10        0.62       -0.0006       -0.006    
     XGBoost               13        7         0.54       0.0239        0.455     
-    MLP                   0         0         --         --            --        
-    FusionModel           4         2         0.50       -0.0219       -0.287    
+    MLP                   9         4         0.44       -0.0896       -0.391    
+    FusionModel           1         1         1.00       0.0526        nan       
     
     Threshold: 0
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3495,12 +3471,12 @@ for epoch in range(n_epochs):
 print("Training done MLP_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0391 | loss_val: 0.8907
-    Epoch 1/5 | loss_train: 1.0034 | loss_val: 0.9686
-    Epoch 2/5 | loss_train: 1.0486 | loss_val: 0.8607
-    Epoch 3/5 | loss_train: 0.9998 | loss_val: 0.8475
-    Epoch 4/5 | loss_train: 0.9983 | loss_val: 0.8459
-    Epoch 5/5 | loss_train: 0.9950 | loss_val: 0.8421
+    Epoch 0/5 | loss_train: 1.0233 | loss_val: 0.8668
+    Epoch 1/5 | loss_train: 1.0048 | loss_val: 1.0232
+    Epoch 2/5 | loss_train: 1.0066 | loss_val: 0.8455
+    Epoch 3/5 | loss_train: 0.9970 | loss_val: 0.8989
+    Epoch 4/5 | loss_train: 1.0066 | loss_val: 0.8443
+    Epoch 5/5 | loss_train: 1.0004 | loss_val: 0.8410
     Training done MLP_reg
     
 
@@ -3576,12 +3552,12 @@ for epoch in range(n_epochs):
 print("Training done FusionModel_reg")
 ```
 
-    Epoch 0/5 | loss_train: 1.0321 | loss_val: 0.8763
-    Epoch 1/5 | loss_train: 0.9999 | loss_val: 0.8435
-    Epoch 2/5 | loss_train: 1.0040 | loss_val: 0.8447
-    Epoch 3/5 | loss_train: 0.9958 | loss_val: 0.8507
-    Epoch 4/5 | loss_train: 0.9925 | loss_val: 0.8472
-    Epoch 5/5 | loss_train: 0.9890 | loss_val: 0.8508
+    Epoch 0/5 | loss_train: 1.0037 | loss_val: 0.8409
+    Epoch 1/5 | loss_train: 1.0022 | loss_val: 0.8535
+    Epoch 2/5 | loss_train: 0.9982 | loss_val: 0.8398
+    Epoch 3/5 | loss_train: 0.9950 | loss_val: 0.8550
+    Epoch 4/5 | loss_train: 0.9910 | loss_val: 0.8482
+    Epoch 5/5 | loss_train: 0.9805 | loss_val: 0.8554
     Training done FusionModel_reg
     
 
@@ -3628,23 +3604,23 @@ for thr in thresholds:
 print_trade_metrics(trade_metrics_each_model_reg, reg=True)
 ```
 
-    Trade metrics given trades resulting from different models and different thresholds on predicted probability:
+    Trade metrics given trades resulting from different models and different thresholds on predicted return:
     
     Threshold: 0.02
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest_reg      328       151       0.46       -0.0019       -0.016    
     ExtraTrees_reg        364       178       0.49       -0.0068       -0.065    
     XGBoost_reg           397       201       0.51       0.0013        0.011     
-    MLP_reg               9         5         0.56       -0.0135       -0.093    
-    FusionModel_reg       31        14        0.45       -0.0146       -0.123    
+    MLP_reg               12        7         0.58       -0.0205       -0.131    
+    FusionModel_reg       33        12        0.36       -0.0614       -0.362    
     
     Threshold: 0.06
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
     RandomForest_reg      48        22        0.46       -0.0073       -0.046    
     ExtraTrees_reg        50        25        0.50       0.0031        0.018     
     XGBoost_reg           74        37        0.50       -0.0069       -0.046    
-    MLP_reg               2         0         0.00       -0.1515       -1.108    
-    FusionModel_reg       6         0         0.00       -0.1709       -1.978    
+    MLP_reg               0         0         --         --            --        
+    FusionModel_reg       12        3         0.25       -0.1256       -0.615    
     
     Threshold: 0.08
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3652,7 +3628,7 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     ExtraTrees_reg        24        10        0.42       -0.0254       -0.166    
     XGBoost_reg           42        17        0.40       -0.0087       -0.048    
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       2         0         0.00       -0.2683       -13.489   
+    FusionModel_reg       8         3         0.38       -0.0718       -0.532    
     
     Threshold: 0.1
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3660,7 +3636,7 @@ print_trade_metrics(trade_metrics_each_model_reg, reg=True)
     ExtraTrees_reg        14        7         0.50       0.0139        0.082     
     XGBoost_reg           20        6         0.30       -0.0279       -0.113    
     MLP_reg               0         0         --         --            --        
-    FusionModel_reg       1         0         0.00       -0.2882       nan       
+    FusionModel_reg       5         1         0.20       -0.0989       -0.662    
     
     Threshold: -inf
                        n_trades  n_correct   hit rate   mean_return   Sharpe    
@@ -3777,7 +3753,6 @@ print("\n---------------------------------------------------------\n")
 
 # Show top performing models
 
-
 print(f"Summary of the top {n_top} model-selected trading sets, each restricted to contain at least {min_n_trades} trades.\n"
 f"The ranking is based on mean return.\n")
 
@@ -3838,16 +3813,16 @@ for m in all_trade_metrics:
     
     ---------------------------------------------------------
     
-    Summary of the top 5 model-selected trading sets, each consisting of at least 10 trades.
+    Summary of the top 5 model-selected trading sets, each restricted to contain at least 10 trades.
     The ranking is based on mean return.
     
     Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_hitrate  p_mean  p_sharpe  
-    RandomForest          0.8        15        11        0.73      0.0243      0.48     0.045     0.100   0.029      
-    XGBoost               0.8        13        7         0.54      0.0239      0.45     0.450     0.116   0.048      
-    ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08     0.556     0.226   0.375      
-    FusionModel           0.65       89        58        0.65      0.0132      0.16     0.001     0.050   0.057      
-    FusionModel           0.6        335       215       0.64      0.0091      0.13     0.000     0.013   0.006      
-    baseline              --         1229      574       0.47      -0.0018     -0.02    0.864     0.770   0.761       
+    RandomForest          0.8        15        11        0.73      0.0243      0.48     0.045     0.100   0.028      
+    XGBoost               0.8        13        7         0.54      0.0239      0.45     0.448     0.117   0.049      
+    ExtraTrees_reg        0.1        14        7         0.50      0.0139      0.08     0.552     0.224   0.373      
+    FusionModel           0.6        196       128       0.65      0.0079      0.10     0.000     0.068   0.076      
+    RandomForest          0.6        460       277       0.60      0.0076      0.10     0.000     0.015   0.009      
+    baseline              --         1229      574       0.47      -0.0018     -0.02    0.863     0.770   0.760       
     
 
 
@@ -3911,7 +3886,7 @@ print(f"\nGlobal p-value (independent draws): {p_value_global}")
     Total number of (model, threshold) pairs from which the top performing
     (model, threshold) pair, i.e., (RandomForest, 0.8), has been selected: 40
     
-    Global p-value (independent draws): 0.94676
+    Global p-value (independent draws): 0.90158
     
 
 
@@ -3987,7 +3962,7 @@ print(f"\nGlobal p-value (nested structure): {p_global:.3f}")
     40000 / 50000 draws complete
     50000 / 50000 draws complete
     
-    Global p-value (nested structure): 0.899
+    Global p-value (nested structure): 0.838
     
 
 ## Appendix
