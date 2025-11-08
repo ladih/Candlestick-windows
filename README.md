@@ -15,8 +15,8 @@ Number of trades in test period: 6866
 
 ---------------------------------------------------------
 
-Summary of the top 5 model-selected trading sets, each restricted to contain at least 10 trades.
-The ranking is based on mean return.
+Summary of the top 5 model-selected trading sets, each restricted to contain at least 10 trades:
+(ranking based on mean return)
 
 Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
 RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
