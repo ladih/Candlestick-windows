@@ -63,7 +63,7 @@ $$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right
 
 The target return for each window is defined as the percentage change from the opening price of the candle after the signal candle to the closing price of the fifth candle after the signal candle:
 
-$$\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
+$$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
 Windows were extracted from one-minute downloaded from [massive.com](https://massive.com)
 
