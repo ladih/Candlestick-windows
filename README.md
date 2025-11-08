@@ -41,7 +41,7 @@ baseline              --         1229      574       0.47      -0.0018     -0.02
 
 ### Statistical significance
 
-The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the `n_trades` of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
+The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A p-value test mimicing this process of taking the maximum mean return of 40 random samples gives a p-value of 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
 
 ### Models
 
