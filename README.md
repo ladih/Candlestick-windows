@@ -27,7 +27,7 @@ XGBoost_reg
 MLP_reg
 FusionModel_reg
 
-Summary of the top 5 model-selected trading sets with >= 10 trades, ranked by mean return:
+Summary of the top 5 model-selected trading sets with at least 10 trades, ranked by mean return:
 
 Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_hitrate  p_mean  p_sharpe  
 RandomForest          0.8        15        11        0.73      0.0243      0.48     0.046     0.102   0.029      
