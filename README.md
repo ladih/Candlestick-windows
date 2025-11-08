@@ -25,7 +25,7 @@ ExtraTrees_reg
 XGBoost_reg
 FusionModek_reg
 
-Summary of top 5 performing model-selected trading sets with $\geq$ 10 trades, ranked by mean return:
+Summary of top 5 performing model-selected trading sets with at least 10 trades, ranked by mean return:
 
 Model              threshold  n_trades  n_correct  hit_rate  mean_return  sharpe  p_mean  p_hitrate  p_sharpe  
 RandomForest          0.8        15        11        0.73      0.0243      0.48    0.100    0.044     0.028      
