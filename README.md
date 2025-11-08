@@ -1,9 +1,27 @@
 # Trade selection using machine learning and candlestick patterns
 
-This project explores how machine learning models can identify trading opportunities 
-based on historical candlestick data and signal candles.  
-Models are trained and tested over defined periods, and evaluated by metrics such as 
-**hit rate**, **mean return**, and **Sharpe ratio** for selected trades.
+This project explores the performance of machine learning models used for accepting or rejetcing trades, given a certain signal candle and historical candlestick data.
 
+
+
+ses machine learning models to decide whether
+
+
+
+## Example run
+
+Each model uses sequences of 21 one-minute candlesticks to 
+
+
+predict the likelihood of 
+positive returns following a “signal candle”.
+
+## Metric definitions
+
+## Models
+
+## Statistical significance
+
+## Data
 
 Data source: [massive.com](https://massive.com/)
