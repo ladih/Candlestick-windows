@@ -65,7 +65,7 @@ The target return for each window is defined as the percentage change from the o
 
 $$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
-Windows were extracted from one-minute downloaded from [massive.com](https://massive.com)
+Windows were extracted from one-minute data downloaded from [massive.com](https://massive.com)
 
 ## Notebook content structure
 
