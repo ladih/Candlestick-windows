@@ -61,11 +61,11 @@ The dataset consists ~ 20,000 one-minute candlestick windows, each containing 26
 
 $$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04.$$
 
-The target return for each window is defined as the percentage change over the five minutes following the signal candle:
+The target return for each window is defined as the percentage change from the opening price of the candle after the signal candle to the closing price of the fifth candle after the signal candle:
 
 $$\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
-Windows were extracted from daily 1-minute data downloaded from [massive.com](https://massive.com)
+Windows were extracted from one-minute downloaded from [massive.com](https://massive.com)
 
 ## Notebook content structure
 
