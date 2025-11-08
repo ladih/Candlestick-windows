@@ -58,7 +58,7 @@ The data consists of preprocessed candlestick windows, where each candlestick re
 
 $$\left|\frac{\text{c}\_\text{21} - \text{o}\_\text{21}}{\text{o}\_\text{21}}\right|\geq 0.04,$$
 
-where we used the notation $\text{o}\_\text{i}$ for the opening price of candle $i$, and $\text{c}\_\text{i}$ for the closing price of candle $i$. This candlestick will be called the **signal candle** of the window.
+where we used the notation $\text{o}\_\text{i}$ for the opening price of candle $i$, and $\text{c}\_\text{i}$ for the closing price of candle $i$. This candlesticke is the **signal candle** of the window.
 
 The **return** for each window is defined statically to be
 
