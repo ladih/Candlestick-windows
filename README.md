@@ -66,4 +66,12 @@ The target return for each window is defined as the percentage change over the f
 
 $$\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
-Windows were extracted from daily 1-minute data downloaded from massive.com
+Windows were extracted from daily 1-minute data downloaded from [massive.com](https://massive.com)
+
+## Notebook content structure
+
+1. Data preparation  
+2. Feature engineering 
+3. Variable selection (heuristic)
+4. Model building and training 
+5. Evaluation
