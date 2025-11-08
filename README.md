@@ -51,6 +51,19 @@ Models tested include:
 Models ending with `_reg` corresond to regressors that predict continuous returns, while those without `_reg`
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
 
+
+#### Data
+
+The data consists of preprocessed candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window and the 21st candlestick for each window satisfies
+
+$$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04,$$
+
+where we used the notation $\text{o}_\text{i}$ for the opening price of candle $i$, and $\text{c}_\text{i}$ for the closing price of candle $i$. This candlestick will be called the **signal candle** of the window.
+
+The **return** for each window is defined statically to be
+
+$$\left|\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}\right|.$$
+
 ### Statistical significance
 
 The model with the highest mean return has been chosen among 40 possible (model, threshold) pairs (5 shown in the example). A fair p-value test should mimic this same process, i.e., select the maximum mean return from 40 randomly chosen samples with sizes corresponding to the `n_trades` of the (model, threshold) pairs. The p-value we got from such a test for this particular run is 0.87, indicating that the top mean return of 0.0243 could very well have been due to chance.
