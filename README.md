@@ -52,7 +52,7 @@ Models ending with `_reg` corresond to regressors that predict continuous return
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
 
 
-### Data
+## Data
 
 The data consists of preprocessed candlestick windows, where each candlestick represents one minute. There are 26 candlesticks for each window and the 21st candlestick for each window satisfies
 
