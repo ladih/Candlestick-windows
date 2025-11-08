@@ -26,11 +26,10 @@ FusionModel           0.65       180       119       0.66      0.0126      0.14 
 RandomForest          0.6        460       277       0.60      0.0076      0.10    0.015    0.000     0.009      
 baseline              --         1229      574       0.47      -0.0018     -0.02   0.770    0.863     0.760
 ```
-**Note:** These results were generated using historical data not included in this repository.
 
 ### Metric definitions
 
-- **baseline** – strategy that takes all non-overlaping trades
+- **baseline** – strategy that takes all possible non-overlapping trades
 - **threshold** – minimum predicted probability/return to open a trade  
 - **n_trades** – number of non-overlaping trades meeting the threshold
 - **n_correct** – number of profitable trades  
@@ -58,7 +57,7 @@ are classifiers predicting probabilities of the binary target (positive vs. nega
 
 ## Data
 
-The dataset consists of 26-minute candlestick windows sampled from 1-minute historical data. Each window contains a signal candle at minute 21, defined as a candle whose absolute percentage change satisfies
+The dataset consists ~ 20,000 one-minute candlestick windows, each containing 26 candlesticks. Each window contains a signal candle at candle 21, defined as a candle whose absolute percentage change satisfies
 
 $$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04.$$
 
