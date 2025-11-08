@@ -50,7 +50,7 @@ Global p-value for top 1 mean return (0.0243): 0.87
 - **mean_return** – average return per trade  
 - **sharpe** – Sharpe ratio of selected trade returns  
 - **p_mean**, **p_hitrate**, **p_sharpe** – p-values from random sampling tests
-- **Global p-value** - p-value from taking the maximum mean return of multiple random samples from the test set
+- **Global p-value** - p-value from repeatedly taking the maximum mean return of multiple random samples from the test set
 
 ### Statistical significance of the example run
 
