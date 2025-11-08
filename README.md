@@ -67,4 +67,4 @@ The **return** for each window is defined statically to be
 
 $$\left|\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}\right|.$$
 
-The candlestick windows were extracted from downloaded 1-minute data from https://massive.com/
+ The windows were extracted from daily 1-minute data downloaded from https://massive.com/
