@@ -67,7 +67,7 @@ $$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22
 
 Windows were extracted from one-minute data downloaded from [massive.com](https://massive.com)
 
-## Notebook content structure
+#### Notebook content structure
 
 1. Data preparation  
 2. Feature engineering 
