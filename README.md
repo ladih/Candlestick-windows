@@ -37,7 +37,7 @@ MLP                   0.6        293       185       0.63      0.0078      0.12 
 MLP                   0.65       52        35        0.67      0.0077      0.10     0.005     0.224   0.231      
 baseline              --         1229      574       0.47      -0.0018     -0.02    0.863     0.770   0.760       
 
-Global p-value for top 1 mean return (0.024): 0.87
+Global p-value for top 1 mean return (0.0243): 0.87
 ```
 
 ### Metric definitions
