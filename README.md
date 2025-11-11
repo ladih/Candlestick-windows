@@ -15,7 +15,7 @@ Number of trades in test period: 6866
 
 Number of (model, threshold) pairs evaluated: 40
 
-Models used:
+Models included in the run:
 RandomForest
 ExtraTrees
 XGBoost
