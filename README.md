@@ -62,7 +62,7 @@ Models tested include:
 - **Random Forest** (classifier & regressor)
 - **ExtraTrees** (classifier & regressor)
 - **XGBoost** (classifier & regressor)
-- **MLP** (classifier & regressor)
+- **Multilayer perceptron (MLP)** (classifier & regressor)
 - **FusionModel** - neural network that uses encoders to handle different types of feature families (classifier & regressor)
 
 Models ending with `_reg` corresond to regressors that predict continuous returns, while those without `_reg`
@@ -85,7 +85,7 @@ Windows were extracted from one-minute data downloaded from [massive.com](https:
 **Notebook content structure:**
 
 1. Data preparation  
-2. Feature engineering 
+2. Feature engineering
 3. Variable selection (heuristic)
-4. Model building and training 
+4. Model building and training
 5. Evaluation
