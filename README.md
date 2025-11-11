@@ -63,7 +63,7 @@ Models tested include:
 - **ExtraTrees**, classifier and regressor  
 - **XGBoost**, classifier and regressor  
 - **Multilayer Perceptron (MLP)**, classifier and regressor  
-- **FusionModel**, neural network that uses encoders to handle different types of features, classifier and regressor
+- **FusionModel**: neural network that uses encoders to handle different types of features, classifier and regressor
 
 Models ending with `_reg` corresond to regressors that predict continuous returns, while those without `_reg`
 are classifiers predicting probabilities of the binary target (positive vs. negative return).
