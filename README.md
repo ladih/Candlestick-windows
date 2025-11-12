@@ -70,7 +70,7 @@ are classifiers predicting probabilities of the binary target (positive vs. nega
 
 ## Data
 
-The dataset consists ~ 20,000 one-minute candlestick windows, each containing 26 candlesticks. Each window has a signal candle at candle 21, defined as a candle whose absolute percentage change satisfies
+The dataset consists ~ 20,000 one-minute candlestick windows, each containing 26 candlesticks. Each window includes a signal candle at candle 21, defined as a candle whose absolute percentage change satisfies
 
 $$\left|\frac{\text{c}_\text{21} - \text{o}_\text{21}}{\text{o}_\text{21}}\right|\geq 0.04.$$
 
@@ -79,6 +79,7 @@ The target return for each window is defined as the percentage change from the o
 $$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
 Windows were extracted from one-minute data downloaded from [massive.com](https://massive.com).
+Due dataset size, the data used for model training and evaluation is not included in this repository. For details on how windows were extracted, see the appendix of the notebook.
 
 ---
 
