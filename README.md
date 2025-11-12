@@ -1,8 +1,6 @@
 # Trade selection using machine learning and candlestick patterns
 
-## Goal
-
-The goal of this project is to build, evaluate, and compare machine learning models that identify trading opportunities based on historical candlestick data and signal candles. Models are trained and tested over specific periods, and their performance is measured by metrics such as hit rate, mean return, and Sharpe ratio for the selected trades.
+This project builds, evaluates, and compares machine learning models that identify trading opportunities based on historical candlestick data and signal candles. Models are trained and tested over specific periods, and their performance is measured using metrics such as hit rate, mean return, and Sharpe ratio for the selected trades.
 
 ## Example run
 
