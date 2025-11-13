@@ -77,7 +77,7 @@ The target return for each window is defined as the percentage change from the o
 $$\text{return}=\frac{\text{c}_\text{26} - \text{o}_\text{22}}{\text{o}_\text{22}}.$$
 
 Windows were extracted from one-minute data downloaded from [massive.com](https://massive.com).
-Due dataset size, the data used for model training and evaluation is not included in this repository. For details on how windows were extracted, see the appendix of the notebook.
+Due dataset size, the data used in the notebook is not included in this repository. For details on how windows were extracted, see the appendix of the notebook.
 
 ---
 
